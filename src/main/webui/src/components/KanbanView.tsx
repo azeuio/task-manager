@@ -46,7 +46,7 @@ function KanbanView({ user, projectId }: KanbanViewProps) {
   }, [projectId, statusesOrder, tasks, user?.username]);
 
   return (
-    <div className='flex flex-row gap-4'>
+    <div className='flex flex-row gap-4 h-full pb-4'>
       {unknownStatusTasks.length > 0 && (
         <KanbanColumn title="Unknown Status" tasks={unknownStatusTasks} />
       )}

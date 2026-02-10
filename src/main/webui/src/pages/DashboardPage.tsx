@@ -3,6 +3,7 @@ import keycloak from '../keycloak'
 import StatsCard from '../components/StatsCard';
 import { CircleAlert, FolderKanban, TriangleAlert } from 'lucide-react';
 import Card from '../components/Card';
+import { Link } from 'react-router';
 
 function Dashboard() {
   const [user, setUser] = React.useState<Keycloak.KeycloakProfile | null>(null);
@@ -49,14 +50,16 @@ function Dashboard() {
             <div className='w-full bg-stone-200 h-0.5 mb-4'/>
             <ul className='flex flex-col gap-2'>
               {getProjects().map(project => (
-                <li key={project.id} className='flex items-center gap-2'>
-                  <div className='rounded-lg size-12 inline-block' style={{ backgroundColor: project.color }} />
-                  <div className='flex flex-col'>
-                    <h3 className='font-semibold'>{project.name}</h3>
-                    <div className='text-stone-500'>
-                      4 tasks - 2 due this week - 1 overdue
+                <li key={project.id} className=''>
+                  <Link to={`/projects/${project.id}`} className='flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100'>
+                    <div className='rounded-lg size-12 inline-block' style={{ backgroundColor: project.color }} />
+                    <div className='flex flex-col'>
+                      <h3 className='font-semibold'>{project.name}</h3>
+                      <div className='text-stone-500'>
+                        4 tasks - 2 due this week - 1 overdue
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </li>
               ))}
             </ul>

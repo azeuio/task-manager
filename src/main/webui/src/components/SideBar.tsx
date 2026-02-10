@@ -1,5 +1,5 @@
 import React from 'react'
-import keycloak from '../auth/keycloak'
+import keycloak from '../keycloak'
 import { Home, Plus } from 'lucide-react';
 import { Link } from 'react-router';
 

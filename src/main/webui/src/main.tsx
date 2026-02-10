@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import './index.css'
 import App from './App.tsx'
 import NotFound from './NotFound.tsx'
-import keycloak from './auth/keycloak.ts'
+import keycloak from './keycloak.ts'
 
 
 keycloak.init({

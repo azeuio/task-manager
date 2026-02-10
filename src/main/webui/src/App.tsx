@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import NotFound from './NotFound';
 import Dashboard from './pages/DashboardPage';
 import React from 'react';
-import keycloak from './auth/keycloak';
+import keycloak from './keycloak';
 import SidebarLayout from './layouts/SidebarLayout';
 import ProjectPage from './pages/ProjectPage';
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import keycloak from '../auth/keycloak'
+import keycloak from '../keycloak'
 import StatsCard from '../components/StatsCard';
 import { CircleAlert, FolderKanban, TriangleAlert } from 'lucide-react';
 import Card from '../components/Card';

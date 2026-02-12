@@ -6,6 +6,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
@@ -24,22 +25,23 @@ public class UserResource {
     @Inject
     JsonWebToken jwt;
 
+    @Inject
+    UserMapper userMapper;
+
     @GET
     @Path("/me")
     @Transactional
-    public User getCurrentUser() {
+    public UserDTO getCurrentUser() {
         String username = securityIdentity.getPrincipal().getName();
-        User user = User.findOrCreateUser(username);
-        Set<String> claims = jwt.getClaimNames();
-        if (claims.contains("email")) {
-            String email = jwt.getClaim("email");
-            user.setEmail(email);
-        }
-        if (claims.contains("preferred_username")) {
-            String displayName = jwt.getClaim("preferred_username");
-            user.setDisplayName(displayName);
-        }
+        User user = User.findOrCreateUser(username, jwt);
 
-        return user;
+        return userMapper.toDTO(user);
+    }
+
+    @GET
+    @Path("/count")
+    @RolesAllowed("admin")
+    public long getUserCount() {
+        return User.count();
     }
 }

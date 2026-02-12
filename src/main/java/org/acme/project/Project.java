@@ -2,10 +2,12 @@ package org.acme.project;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.acme.project_member.ProjectMember;
 import org.acme.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.CascadeType;
@@ -36,11 +38,15 @@ public class Project extends PanacheEntity {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectMember> members = new HashSet<>();
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private List<String> customStatuses;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt = Instant.now();
 
     // Constructors
-    public Project() {}
+    public Project() {
+    }
 
     public Project(String name, String description, ProjectStatus status, User owner) {
         this.name = name;
@@ -50,25 +56,65 @@ public class Project extends PanacheEntity {
     }
 
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getName() {
+        return name;
+    }
 
-    public ProjectStatus getStatus() { return status; }
-    public void setStatus(ProjectStatus status) { this.status = status; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public User getOwner() { return owner; }
-    public void setOwner(User owner) { this.owner = owner; }
+    public String getDescription() {
+        return description;
+    }
 
-    public Set<ProjectMember> getMembers() { return members; }
-    public void setMembers(Set<ProjectMember> members) { this.members = members; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
+    public ProjectStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProjectStatus status) {
+        this.status = status;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public Set<ProjectMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<ProjectMember> members) {
+        this.members = members;
+    }
+
+    public List<String> getCustomStatuses() {
+        return customStatuses;
+    }
+
+    public void setCustomStatuses(List<String> customStatuses) {
+        this.customStatuses = customStatuses;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
     // Helper methods
     public void addMember(ProjectMember member) {

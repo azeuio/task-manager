@@ -12,6 +12,21 @@ services:
       - "8081:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
+  postgres:
+    image: postgres:16-alpine
+    container_name: quarkus-postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   keycloak_data:
+  postgres_data:

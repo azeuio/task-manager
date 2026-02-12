@@ -1,9 +1,12 @@
-package org.acme.task;
+package org.acme.resource;
 
 import java.util.List;
 
-import org.acme.project.Project;
-import org.acme.user.User;
+import org.acme.model.project.Project;
+import org.acme.model.task.Task;
+import org.acme.model.task.TaskDTO;
+import org.acme.model.user.User;
+import org.acme.service.TaskMapperService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -31,7 +34,7 @@ public class TaskResource {
     JsonWebToken jwt;
 
     @Inject
-    TaskMapper taskMapper;
+    TaskMapperService taskMapper;
 
     @GET
     public List<TaskDTO> getTasks(@PathParam("projectId") Long projectId) {

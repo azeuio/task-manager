@@ -1,4 +1,4 @@
-package org.acme.task;
+package org.acme.model.task;
 
 import java.time.Instant;
 

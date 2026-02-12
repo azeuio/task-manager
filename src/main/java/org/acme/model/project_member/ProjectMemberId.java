@@ -1,4 +1,4 @@
-package org.acme.project_member;
+package org.acme.model.project_member;
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
@@ -10,7 +10,8 @@ public class ProjectMemberId implements Serializable {
     private Long projectId;
     private Long userId;
 
-    public ProjectMemberId() {}
+    public ProjectMemberId() {
+    }
 
     public ProjectMemberId(Long projectId, Long userId) {
         this.projectId = projectId;
@@ -20,8 +21,10 @@ public class ProjectMemberId implements Serializable {
     // Getters, setters, equals, and hashCode
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ProjectMemberId)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof ProjectMemberId))
+            return false;
         ProjectMemberId that = (ProjectMemberId) o;
         return Objects.equals(projectId, that.projectId) && Objects.equals(userId, that.userId);
     }
@@ -32,8 +35,19 @@ public class ProjectMemberId implements Serializable {
     }
 
     // getters and setters
-    public Long getProjectId() { return projectId; }
-    public void setProjectId(Long projectId) { this.projectId = projectId; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

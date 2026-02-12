@@ -1,8 +1,12 @@
-package org.acme.project;
+package org.acme.resource;
 
 import java.util.List;
 
-import org.acme.user.User;
+import org.acme.model.project.Project;
+import org.acme.model.project.ProjectDTO;
+import org.acme.model.project.ProjectStatus;
+import org.acme.model.user.User;
+import org.acme.service.ProjectMapperService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -28,7 +32,7 @@ public class ProjectResource {
     JsonWebToken jwt;
 
     @Inject
-    ProjectMapper projectMapper;
+    ProjectMapperService projectMapper;
 
     @GET
     public List<ProjectDTO> getProjects() {

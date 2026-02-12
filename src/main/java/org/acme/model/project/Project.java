@@ -1,12 +1,12 @@
-package org.acme.project;
+package org.acme.model.project;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.acme.project_member.ProjectMember;
-import org.acme.user.User;
+import org.acme.model.project_member.ProjectMember;
+import org.acme.model.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;

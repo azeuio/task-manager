@@ -1,4 +1,4 @@
-package org.acme.project;
+package org.acme.model.project;
 
 public record ProjectDTO(
         Long id,

@@ -1,7 +1,10 @@
-package org.acme.user;
+package org.acme.resource;
 
 import java.util.Set;
 
+import org.acme.model.user.User;
+import org.acme.model.user.UserDTO;
+import org.acme.service.UserMapperService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -26,7 +29,7 @@ public class UserResource {
     JsonWebToken jwt;
 
     @Inject
-    UserMapper userMapper;
+    UserMapperService userMapper;
 
     @GET
     @Path("/me")

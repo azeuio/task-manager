@@ -1,10 +1,10 @@
-package org.acme.task;
+package org.acme.model.task;
 
 import jakarta.persistence.*;
 import java.time.Instant;
 
-import org.acme.project.Project;
-import org.acme.user.User;
+import org.acme.model.project.Project;
+import org.acme.model.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

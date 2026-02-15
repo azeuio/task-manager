@@ -38,20 +38,22 @@ function Dashboard() {
 
   return (
       <div className='flex flex-col gap-8'>
-        <div className='font-bold text-xl'>Welcome back, {user?.firstName ?? 'user'}</div>
-        <p className='text-gray-600'>Here's an overview of your tasks and projects</p>
-        <div className='flex flex-row gap-4 *:bg-white *:rounded-md *:shadow *:shadow-stone-400 *:p-4 *:w-full'>
-          <StatsCard title="Total projects" value="5" icon={<FolderKanban className='stroke-stone-500' />} />
-          <StatsCard title="Tasks due today" value="3" icon={<CircleAlert className='stroke-amber-500' />} />
-          <StatsCard title="Overdue tasks" value="2" icon={<TriangleAlert className='stroke-red-500' />} />
+        <div className='flex flex-col gap-2 border-b border-base-content/25 pb-4'>
+          <h1 className='font-bold text-3xl'>Welcome back, {user?.firstName ?? 'user'}</h1>
+          <p className='text-gray-600'>Here's an overview of your tasks and projects</p>
+        </div>
+        <div className='flex flex-row gap-4'>
+          <StatsCard title="Total projects" value="5" icon={<FolderKanban className='stroke-base-content' />} />
+          <StatsCard title="Tasks due today" value="3" icon={<CircleAlert className='stroke-warning' />} />
+          <StatsCard title="Overdue tasks" value="2" icon={<TriangleAlert className='stroke-error' />} />
         </div>
         <div className='flex flex-row gap-8'>
           <Card title={<div className='font-bold text-lg'>Your projects</div> }>
-            <div className='w-full bg-stone-200 h-0.5 mb-4'/>
+            <div className='w-full bg-base-content/25 h-0.5 mb-4'/>
             <ul className='flex flex-col gap-2'>
               {getProjects().map(project => (
                 <li key={project.id} className=''>
-                  <Link to={`/projects/${project.id}`} className='flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100'>
+                  <Link to={`/projects/${project.id}`} className='flex items-center gap-2 px-3 py-2 rounded-md hover:bg-base-200'>
                     <div className='rounded-lg size-12 inline-block' style={{ backgroundColor: project.color }} />
                     <div className='flex flex-col'>
                       <h3 className='font-semibold'>{project.name}</h3>
@@ -65,7 +67,7 @@ function Dashboard() {
             </ul>
           </Card>
           <Card title={<div className='font-bold text-lg'>Recent tasks</div>}>
-            <div className='w-full bg-stone-200 h-0.5 mb-4'/>
+            <div className='w-full bg-base-content/25 h-0.5 mb-4'/>
             <ul className='flex flex-col gap-2'>
               {getRecentTasks().map(task => (
                 <li key={task.id} className='flex flex-row justify-between'>

@@ -35,7 +35,7 @@ public class ProjectMember {
         this.project = project;
         this.user = user;
         this.role = role;
-        this.id = new ProjectMemberId(project.getId(), user.id);
+        this.id = new ProjectMemberId(project.id, user.id);
     }
 
     // Getters and Setters

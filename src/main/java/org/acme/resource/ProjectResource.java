@@ -15,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -51,8 +52,33 @@ public class ProjectResource {
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDTO) {
         User owner = User.findOrCreateUser(securityIdentity.getPrincipal().getName(), jwt);
-        Project project = new Project(projectDTO.name(), projectDTO.description(), ProjectStatus.ACTIVE, owner);
+        Project project = projectMapper.toEntity(projectDTO);
+        project.setOwner(owner);
 
+        project.persist();
+        return projectMapper.toDTO(project);
+    }
+
+    @PATCH
+    @Path("/{id}")
+    @Transactional
+    public ProjectDTO updateProject(@PathParam("id") Long id, ProjectDTO projectDTO) {
+        Project project = Project.findById(id);
+        if (project == null) {
+            throw new RuntimeException("Project not found");
+        }
+        if (projectDTO.name() != null) {
+            project.setName(projectDTO.name());
+        }
+        if (projectDTO.description() != null) {
+            project.setDescription(projectDTO.description());
+        }
+        if (projectDTO.color() != null) {
+            project.setColor(projectDTO.color());
+        }
+        if (projectDTO.status() != null) {
+            project.setStatus(projectDTO.status());
+        }
         project.persist();
         return projectMapper.toDTO(project);
     }

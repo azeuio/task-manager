@@ -28,8 +28,11 @@ public class Project extends PanacheEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
-    private ProjectStatus status;
+    @Column
+    private String color;
+
+    @Column
+    private ProjectStatus status = ProjectStatus.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = true, updatable = false)
@@ -56,14 +59,6 @@ public class Project extends PanacheEntity {
     }
 
     // Getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -78,6 +73,14 @@ public class Project extends PanacheEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public ProjectStatus getStatus() {

@@ -4,6 +4,8 @@ public record ProjectDTO(
         Long id,
         String name,
         String description,
-        String status,
-        Long ownerId) {
+        String color,
+        ProjectStatus status,
+        Long ownerId,
+        String[] customStatuses) {
 }

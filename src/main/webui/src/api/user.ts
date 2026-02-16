@@ -16,3 +16,6 @@ export const fetchUser = (userId: User["id"]) =>
       "Content-Type": "application/json",
     },
   });
+
+export const fetchUserProfilePicture = (userName: User["username"]) =>
+  `https://ui-avatars.com/api/?name=${userName}&background=0D8ABC&color=fff&size=32`;

@@ -3,6 +3,7 @@ import { ClipboardList, Home } from "lucide-react";
 import { Link } from "react-router";
 import Projectlist from "./sidebar/Projectlist";
 import { useKeycloakUser } from "@/hooks/useUser";
+import { fetchUserProfilePicture } from "@/api/user";
 
 function SideBar() {
   const user = useKeycloakUser();
@@ -81,7 +82,9 @@ function SideBar() {
         htmlFor="user-menu-toggle"
         className="relative flex cursor-pointer flex-row items-center px-4 py-4 hover:bg-gray-200"
       >
-        <div className="size-8 rounded-full bg-black">{/* User Avatar */}</div>
+        <div className="size-8 rounded-full bg-black">
+          <img src={fetchUserProfilePicture(user?.username ?? "default")} />
+        </div>
         <div className="ml-2">
           <div>
             {user ? user.username : "User Name"} {}

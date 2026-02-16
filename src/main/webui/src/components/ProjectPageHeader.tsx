@@ -1,3 +1,4 @@
+import { fetchUserProfilePicture } from "@/api/user";
 import { useUpdateProject } from "@/hooks/useProjects";
 import type { Project } from "@api/types";
 import { Ellipsis } from "lucide-react";
@@ -130,7 +131,7 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
                 return (
                   <img
                     key={index}
-                    src={`https://ui-avatars.com/api/?name=${username}&background=0D8ABC&color=fff&size=32`}
+                    src={fetchUserProfilePicture(username)}
                     alt={`${username}'s avatar`}
                     className="rounded-full border-2 border-white"
                   />

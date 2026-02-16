@@ -6,6 +6,7 @@ import org.acme.model.user.KeycloakUser;
 import org.acme.model.user.User;
 import org.acme.model.user.UserDTO;
 import org.acme.service.UserMapperService;
+import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -34,12 +35,15 @@ public class UserResource {
     @Inject
     UserMapperService userMapper;
 
+    @Inject
+    UserService userService;
+
     @GET
     @Path("/me")
     @Transactional
     public UserDTO getCurrentUser() {
         String username = securityIdentity.getPrincipal().getName();
-        User user = User.findOrCreateUser(username, jwt);
+        User user = userService.findUser(username);
 
         return userMapper.toDTO(user);
     }

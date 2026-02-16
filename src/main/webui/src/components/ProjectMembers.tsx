@@ -1,6 +1,9 @@
 import type { Project, User } from "@/api/types";
 import { fetchUser, fetchUserProfilePicture } from "@/api/user";
-import { useProjectMembers } from "@/hooks/useProjectMembers";
+import {
+  useCreateProjectMember,
+  useProjectMembers,
+} from "@/hooks/useProjectMembers";
 import { useEffect, useState } from "react";
 
 interface ProjectAssigneesProps {
@@ -8,6 +11,7 @@ interface ProjectAssigneesProps {
 }
 function ProjectMembers({ projectId }: ProjectAssigneesProps) {
   const { data: members } = useProjectMembers(projectId);
+  const { mutate: createProjectMember } = useCreateProjectMember(projectId);
   const [projectMembers, setProjectMembers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -28,8 +32,25 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
 
     fetchMembers();
   }, [members]);
+
+  const onAddMember = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
+    if (username) {
+      console.log("Adding member:", username);
+      createProjectMember(username);
+    }
+    e.currentTarget.reset(); // Clear the input field after submission
+    const dropdown = document.getElementById("project-members-dropdown");
+    if (dropdown) {
+      dropdown.removeAttribute("open"); // Close the dropdown after adding a member
+    }
+  };
+
   return (
-    <details className="dropdown dropdown-end">
+    <details id="project-members-dropdown" className="dropdown dropdown-end">
       <summary className="btn btn-ghost btn-sm rounded-full">
         {/* Where you can see people that have access to this project */}
         {(projectMembers?.length ?? 0) > 0 && (
@@ -71,14 +92,17 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
             </div>
           ))
         )}
-        <input
-          type="text"
-          placeholder="Add member by username"
-          className="input input-bordered w-full mt-2"
-        />
-        <button className="btn btn-primary btn-sm w-full mt-2">
-          Add Member
-        </button>
+        <form onSubmit={onAddMember} className="flex flex-col gap-2 p-2">
+          <input
+            name="username"
+            type="text"
+            placeholder="Add member by username"
+            className="input input-bordered w-full mt-2"
+          />
+          <button type="submit" className="btn btn-primary btn-sm w-full mt-2">
+            Add Member
+          </button>
+        </form>
       </div>
     </details>
   );

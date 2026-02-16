@@ -7,6 +7,7 @@ import org.acme.model.task.Task;
 import org.acme.model.task.TaskDTO;
 import org.acme.model.user.User;
 import org.acme.service.TaskMapperService;
+import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -35,6 +36,9 @@ public class TaskResource {
 
     @Inject
     TaskMapperService taskMapper;
+
+    @Inject
+    UserService userService;
 
     @GET
     public List<TaskDTO> getTasks(@PathParam("projectId") Long projectId) {
@@ -73,7 +77,7 @@ public class TaskResource {
         if (project == null) {
             throw new RuntimeException("Project not found");
         }
-        User createdBy = User.findOrCreateUser(securityIdentity.getPrincipal().getName(), jwt);
+        User createdBy = userService.findUser(securityIdentity.getPrincipal().getName());
         Task newTask = new Task(taskDTO.title(), taskDTO.description(), taskDTO.status(), taskDTO.priority(), project,
                 createdBy);
         newTask.persist();

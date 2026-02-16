@@ -9,13 +9,17 @@ export const fetchProjectMembers = (projectId: number) =>
     },
   });
 
-export const addProjectMember = (projectId: number, username: string) =>
+export const addProjectMember = (
+  projectId: number,
+  username: string,
+  role: ProjectMember["role"],
+) =>
   fetchAuthenticated<ProjectMember>(`/api/v1/projects/${projectId}/members`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    data: { username },
+    data: { projectId, username, role },
   });
 
 export const removeProjectMember = (projectId: number, username: string) =>

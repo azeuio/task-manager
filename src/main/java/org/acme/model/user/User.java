@@ -112,29 +112,4 @@ public class User extends PanacheEntity {
     // // from Keycloak
     // return username + "@example.com";
     // }
-
-    public static User findOrCreateUser(String keycloakId, JsonWebToken jwt) {
-        User user = find("username", keycloakId).firstResult();
-        boolean updated = false;
-        if (user == null) {
-            user = new User(keycloakId);
-            updated = true;
-        }
-        if (jwt != null) {
-            Set<String> claims = jwt.getClaimNames();
-
-            if (claims.contains("email")) {
-                String email = jwt.getClaim("email");
-                user.setEmail(email);
-            }
-            if (claims.contains("preferred_username")) {
-                String displayName = jwt.getClaim("preferred_username");
-                user.setDisplayName(displayName);
-            }
-        }
-        if (updated) {
-            persist(user);
-        }
-        return user;
-    }
 }

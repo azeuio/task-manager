@@ -12,6 +12,8 @@ import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
 import org.acme.service.ProjectMapperService;
 import org.acme.service.ProjectMemberMapperService;
+import org.acme.service.ProjectService;
+import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -43,10 +45,22 @@ public class ProjectResource {
     @Inject
     ProjectMemberMapperService projectMemberMapper;
 
+    @Inject
+    UserService userService;
+
+    @Inject
+    ProjectService projectService;
+
     @GET
+    @Transactional // because of lazy loading of members
     public List<ProjectDTO> getProjects() {
-        List<Project> projects = Project.listAll();
-        return projects.stream().map(projectMapper::toDTO).toList();
+        User currentUser = userService.findUser(securityIdentity.getPrincipal().getName());
+        List<ProjectMember> projects = projectService.findByMemberUserId(currentUser.id);
+        List<ProjectDTO> projectDTOs = projects.stream()
+                .map(pm -> projectMapper.toDTO(pm.getProject()))
+                .toList();
+        return projectDTOs;
+
     }
 
     @GET
@@ -59,7 +73,7 @@ public class ProjectResource {
     @POST
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDTO) {
-        User owner = User.findOrCreateUser(securityIdentity.getPrincipal().getName(), jwt);
+        User owner = userService.findUser(securityIdentity.getPrincipal().getName());
         Project project = projectMapper.toEntity(projectDTO);
         ProjectMember ownerMembership = new ProjectMember(project, owner, ProjectMemberRole.OWNER);
         project.setOwner(owner);
@@ -131,14 +145,18 @@ public class ProjectResource {
     public ProjectMemberDTO addProjectMember(@PathParam("projectId") Long projectId,
             ProjectMemberDTO projectMemberDTO) {
         Project project = Project.findById(projectId);
-        User user = User.findById(projectMemberDTO.userId());
+        User user = userService.findUser(projectMemberDTO.username());
         if (project == null || user == null) {
             throw new RuntimeException("Project or User not found");
         }
+        System.out.println("Adding user " + user.getUsername() + " to project " + project.getName() + " with role "
+                + projectMemberDTO.role());
         ProjectMember projectMember = projectMemberMapper.toEntity(projectMemberDTO);
         projectMember.setProject(project);
         projectMember.setUser(user);
         projectMember.persist();
+        project.addMember(projectMember);
+        project.persist();
         return projectMemberMapper.toDTO(projectMember);
     }
 

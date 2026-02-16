@@ -130,4 +130,13 @@ public class Project extends PanacheEntity {
         members.remove(member);
         member.setProject(null);
     }
+
+    // public static List<Project> findByOwnerId(Long ownerId) {
+    // return list("owner.id", ownerId);
+    // }
+
+    // public static List<Project> findByMemberUserId(Long userId) {
+    // return list("select m.project from ProjectMember m where m.user.id = ?1",
+    // userId);
+    // }
 }

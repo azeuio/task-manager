@@ -3,13 +3,12 @@ import SideBar from "../components/SideBar";
 
 interface SidebarLayoutProps {
   children?: React.ReactNode;
-  user: Keycloak.KeycloakProfile | null;
   header?: React.ReactNode;
 }
-function SidebarLayout({ children, user, header }: SidebarLayoutProps) {
+function SidebarLayout({ children, header }: SidebarLayoutProps) {
   return (
     <div className="flex flex-row h-screen">
-      <SideBar user={user} />
+      <SideBar />
       <div className="flex flex-col flex-1 bg-base-200">
         {header && (
           <div className="p-4 bg-base-100 border-b border-base-content/25 h-24">

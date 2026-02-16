@@ -1,13 +1,18 @@
 import type { Task } from "@api/types";
 
 interface KanbanColumnItemProps {
-  task: Omit<Task, "projectId">;
+  task: Task;
+  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
 }
-function KanbanColumnItem({ task }: KanbanColumnItemProps) {
+function KanbanColumnItem({ task, setSelectedTask }: KanbanColumnItemProps) {
   return (
-    <button className="btn btn-soft justify-start hover:ring ring-primary">
+    <label
+      htmlFor="task-drawer-checkbox"
+      className="btn btn-soft justify-start hover:ring ring-primary drawer-button"
+      onClick={() => setSelectedTask(task)}
+    >
       {task.title}
-    </button>
+    </label>
   );
 }
 

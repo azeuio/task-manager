@@ -5,13 +5,17 @@ interface ApiResponse<T> {
 }
 
 interface Task {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   status: number; // 0 = To Do, 1 = In Progress, 2 = Done
+  priority?: number;
   projectId: Project["id"];
-  assigneesId?: string[];
   dueDate?: string;
+  createdById: User["id"];
+  assignedToId?: User["id"];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Project {
@@ -24,4 +28,11 @@ interface Project {
   statusesOrder?: number[]; // Optional order of statuses, if not provided, default order is To Do, In Progress, Done
 }
 
-export type { ApiResponse, Task, Project };
+interface User {
+  id: number;
+  username: string;
+  displayName: string;
+  email: string;
+}
+
+export type { ApiResponse, Task, Project, User };

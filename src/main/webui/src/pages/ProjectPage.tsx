@@ -6,10 +6,7 @@ import SidebarLayout from "@/layouts/SidebarLayout";
 import ProjectPageHeader from "@/components/ProjectPageHeader";
 import { useProject } from "@/hooks/useProjects";
 
-interface ProjectPageProps {
-  user: Keycloak.KeycloakProfile | null;
-}
-function ProjectPage({ user }: ProjectPageProps) {
+function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const {
     data: project,
@@ -19,7 +16,7 @@ function ProjectPage({ user }: ProjectPageProps) {
   const [view, setView] = React.useState<"kanban" | "graph">("kanban");
 
   if (isLoading) {
-    return <SidebarLayout user={user} />;
+    return <SidebarLayout />;
   }
 
   if (!projectId || isError) {
@@ -32,7 +29,6 @@ function ProjectPage({ user }: ProjectPageProps) {
 
   return (
     <SidebarLayout
-      user={user}
       header={
         isLoading ? (
           <div>Loading...</div>
@@ -45,8 +41,8 @@ function ProjectPage({ user }: ProjectPageProps) {
     >
       <div className="flex flex-col gap-4 h-full max-h-full">
         <div className="overflow-x-auto h-full">
-          {view === "kanban" && <KanbanView user={user} project={project} />}
-          {view === "graph" && <GraphView user={user} />}
+          {view === "kanban" && <KanbanView project={project} />}
+          {view === "graph" && <GraphView />}
         </div>
       </div>
     </SidebarLayout>

@@ -3,12 +3,13 @@ import KanbanColumn from "./kanban/KanbanColumn";
 import type { Project, Task } from "@/api/types";
 import { useTasks } from "@/hooks/useTasks";
 import AddTaskModal from "./AddTaskModal";
+import TaskSideBar from "./TaskSideBar";
 
 interface KanbanViewProps {
-  user: Keycloak.KeycloakProfile | null;
   project: Project;
 }
 function KanbanView({ project }: KanbanViewProps) {
+  const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
   const [statuses, setStatuses] = React.useState<string[]>([
     "To Do",
     "In Progress",
@@ -21,12 +22,13 @@ function KanbanView({ project }: KanbanViewProps) {
   const { data: tasks } = useTasks(project.id);
 
   return (
-    <div className="flex flex-row gap-4 h-full">
+    <div className="flex flex-row gap-4 h-full drawer drawer-end">
       {unknownStatusTasks.length > 0 && (
         <KanbanColumn
           title="Unknown Status"
           tasks={unknownStatusTasks}
           status={-1}
+          setSelectedTask={setSelectedTask}
         />
       )}
       {statuses.map((status, index) => (
@@ -39,6 +41,7 @@ function KanbanView({ project }: KanbanViewProps) {
             ) ?? []
           }
           status={statusesOrder[index] ?? -1}
+          setSelectedTask={setSelectedTask}
         />
       ))}
 
@@ -47,6 +50,35 @@ function KanbanView({ project }: KanbanViewProps) {
         statuses={statuses}
         statusesOrder={statusesOrder}
       />
+      {/* <div className="drawer drawer-end"> */}
+      <input
+        id="task-drawer-checkbox"
+        type="checkbox"
+        className="drawer-toggle"
+      />
+      {/* <div className="drawer-content">
+      </div> */}
+      <div className="drawer-side">
+        <label
+          htmlFor="task-drawer-checkbox"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
+        <TaskSideBar
+          task={
+            selectedTask || {
+              id: -1,
+              projectId: project.id,
+              status: -1,
+              title: "No Task Selected",
+              createdAt: new Date().toISOString(),
+              createdById: -1,
+              updatedAt: new Date().toISOString(),
+            }
+          }
+        />
+      </div>
+      {/* </div> */}
     </div>
   );
 }

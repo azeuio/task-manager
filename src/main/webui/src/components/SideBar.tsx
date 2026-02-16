@@ -1,22 +1,23 @@
-import keycloak from '../keycloak'
-import { ClipboardList, Home } from 'lucide-react';
-import { Link } from 'react-router';
-import Projectlist from './sidebar/Projectlist';
+import keycloak from "../keycloak";
+import { ClipboardList, Home } from "lucide-react";
+import { Link } from "react-router";
+import Projectlist from "./sidebar/Projectlist";
+import { useKeycloakUser } from "@/hooks/useUser";
 
+function SideBar() {
+  const user = useKeycloakUser();
 
-function SideBar({user}: {user: Keycloak.KeycloakProfile | null}) {
   const handleLogout = () => {
     // Implement logout logic here, e.g., clear tokens, redirect to login page, etc.
-    keycloak.logout().then(() => {
-      console.log('User logged out successfully');
-    }).catch(error => {
-      console.error('Failed to log out', error);
-    });
-  }
-
-
-
-
+    keycloak
+      .logout()
+      .then(() => {
+        console.log("User logged out successfully");
+      })
+      .catch((error) => {
+        console.error("Failed to log out", error);
+      });
+  };
 
   return (
     <div className="bg-base-100 flex min-h-screen flex-col divide-y divide-base-content/25 border-r border-base-content/25">
@@ -28,7 +29,10 @@ function SideBar({user}: {user: Keycloak.KeycloakProfile | null}) {
         <div className="text-lg font-bold">Task Manager</div>
       </div>
       <div className="grow px-2 py-2">
-        <Link to="/dashboard" className="flex cursor-pointer flex-row items-center rounded-md px-4 py-2 hover:bg-base-300">
+        <Link
+          to="/dashboard"
+          className="flex cursor-pointer flex-row items-center rounded-md px-4 py-2 hover:bg-base-300"
+        >
           <Home className="mr-2" strokeWidth={1} />
           Dashboard
         </Link>
@@ -40,19 +44,22 @@ function SideBar({user}: {user: Keycloak.KeycloakProfile | null}) {
           name="theme-buttons"
           className="btn theme-controller join-item"
           aria-label="Default"
-          value="default" />
+          value="default"
+        />
         <input
           type="radio"
           name="theme-buttons"
           className="btn theme-controller join-item"
           aria-label="Light"
-          value="autumn" />
+          value="autumn"
+        />
         <input
           type="radio"
           name="theme-buttons"
           className="btn theme-controller join-item"
           aria-label="Dark"
-          value="abyss" />
+          value="abyss"
+        />
       </div>
       <div className="relative px-2">
         <input
@@ -85,7 +92,7 @@ function SideBar({user}: {user: Keycloak.KeycloakProfile | null}) {
         </div>
       </label>
     </div>
-  )
+  );
 }
 
-export default SideBar
+export default SideBar;

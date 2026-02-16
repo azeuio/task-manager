@@ -1,12 +1,7 @@
-import React from 'react'
+import React from "react";
 
-interface GraphViewProps {
-  user: Keycloak.KeycloakProfile | null;
-}
-function GraphView({ user }: GraphViewProps) {
-  return (
-    <div>GraphView</div>
-  )
+function GraphView() {
+  return <div>GraphView</div>;
 }
 
-export default GraphView
+export default GraphView;

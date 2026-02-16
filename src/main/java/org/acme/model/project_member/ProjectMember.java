@@ -2,49 +2,42 @@ package org.acme.model.project_member;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 import org.acme.model.project.Project;
 import org.acme.model.user.User;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
 @Entity
-@Table(name = "project_members")
-public class ProjectMember {
+@Table(name = "project_members", uniqueConstraints = @UniqueConstraint(columnNames = { "project_id", "user_id" }))
+public class ProjectMember extends PanacheEntity {
 
-    @EmbeddedId
-    private ProjectMemberId id = new ProjectMemberId();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("projectId")
+    @ManyToOne(optional = false)
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
+    @ManyToOne(optional = false)
     private User user;
 
     @Column
-    private String role; // project-specific role
+    private ProjectMemberRole role; // project-specific role
 
-    @Column(name = "joined_at")
+    @Column(name = "joined_at", updatable = false)
     private Instant joinedAt = Instant.now();
 
     // Constructors
     public ProjectMember() {
     }
 
-    public ProjectMember(Project project, User user, String role) {
+    public ProjectMember(Project project, User user, ProjectMemberRole role) {
         this.project = project;
         this.user = user;
         this.role = role;
-        this.id = new ProjectMemberId(project.id, user.id);
     }
 
     // Getters and Setters
-    public ProjectMemberId getId() {
+    public Long getId() {
         return id;
-    }
-
-    public void setId(ProjectMemberId id) {
-        this.id = id;
     }
 
     public Project getProject() {
@@ -63,11 +56,11 @@ public class ProjectMember {
         this.user = user;
     }
 
-    public String getRole() {
+    public ProjectMemberRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(ProjectMemberRole role) {
         this.role = role;
     }
 
@@ -77,5 +70,18 @@ public class ProjectMember {
 
     public void setJoinedAt(Instant joinedAt) {
         this.joinedAt = joinedAt;
+    }
+
+    // Static query methods
+    public static List<ProjectMember> findByUserId(Long userId) {
+        return list("user.id", userId);
+    }
+
+    public static List<ProjectMember> findByProjectId(Long projectId) {
+        return list("project.id", projectId);
+    }
+
+    public static ProjectMember findByProjectIdAndUserId(Long projectId, Long userId) {
+        return find("project.id = ?1 and user.id = ?2", projectId, userId).firstResult();
     }
 }

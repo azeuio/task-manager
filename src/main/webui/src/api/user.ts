@@ -19,3 +19,16 @@ export const fetchUser = (userId: User["id"]) =>
 
 export const fetchUserProfilePicture = (userName: User["username"]) =>
   `https://ui-avatars.com/api/?name=${userName}&background=0D8ABC&color=fff&size=32`;
+
+export const registerKeycloakUser = (
+  username: string,
+  email: string,
+  password: string,
+) =>
+  fetchAuthenticated<User>("/api/v1/users/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: { username, email, password },
+  });

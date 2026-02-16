@@ -12,5 +12,8 @@ public interface TaskMapperService {
     @Mapping(source = "createdBy.id", target = "createdById")
     TaskDTO toDTO(Task task);
 
+    @Mapping(source = "projectId", target = "project.id")
+    @Mapping(source = "assignedToId", target = "assignedTo.id")
+    @Mapping(source = "createdById", target = "createdBy.id")
     Task toEntity(TaskDTO taskDTO);
 }

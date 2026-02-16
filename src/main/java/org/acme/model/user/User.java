@@ -28,15 +28,15 @@ public class User extends PanacheEntity {
     @Column(nullable = true, unique = true)
     private String email;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserStats stats;
+    // @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private UserStats stats;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectMember> projectMemberships = new HashSet<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt = Instant.now();
 
     // Constructors
     public User() {
@@ -79,13 +79,13 @@ public class User extends PanacheEntity {
         return createdAt;
     }
 
-    public UserStats getStats() {
-        return stats;
-    }
+    // public UserStats getStats() {
+    // return stats;
+    // }
 
-    public void setStats(UserStats stats) {
-        this.stats = stats;
-    }
+    // public void setStats(UserStats stats) {
+    // this.stats = stats;
+    // }
 
     // public Set<Project> getOwnedProjects() { return ownedProjects; }
     // public void setOwnedProjects(Set<Project> ownedProjects) { this.ownedProjects

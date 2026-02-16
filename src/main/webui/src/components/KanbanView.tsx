@@ -64,19 +64,7 @@ function KanbanView({ project }: KanbanViewProps) {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <TaskSideBar
-          task={
-            selectedTask || {
-              id: -1,
-              projectId: project.id,
-              status: -1,
-              title: "No Task Selected",
-              createdAt: new Date().toISOString(),
-              createdById: -1,
-              updatedAt: new Date().toISOString(),
-            }
-          }
-        />
+        {selectedTask && <TaskSideBar task={selectedTask} />}
       </div>
       {/* </div> */}
     </div>

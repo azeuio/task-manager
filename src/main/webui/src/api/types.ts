@@ -35,4 +35,12 @@ interface User {
   email: string;
 }
 
-export type { ApiResponse, Task, Project, User };
+interface ProjectMember {
+  id: number;
+  projectId: Project["id"];
+  userId: User["id"];
+  role: "OWNER" | "CONTRIBUTOR" | "VIEWER";
+  joinedAt: string;
+}
+
+export type { ApiResponse, Task, Project, User, ProjectMember };

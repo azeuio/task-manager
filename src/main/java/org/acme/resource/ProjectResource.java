@@ -1,12 +1,17 @@
 package org.acme.resource;
 
 import java.util.List;
+import java.util.Set;
 
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectDTO;
 import org.acme.model.project.ProjectStatus;
+import org.acme.model.project_member.ProjectMember;
+import org.acme.model.project_member.ProjectMemberDTO;
+import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
 import org.acme.service.ProjectMapperService;
+import org.acme.service.ProjectMemberMapperService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.security.Authenticated;
@@ -35,6 +40,9 @@ public class ProjectResource {
     @Inject
     ProjectMapperService projectMapper;
 
+    @Inject
+    ProjectMemberMapperService projectMemberMapper;
+
     @GET
     public List<ProjectDTO> getProjects() {
         List<Project> projects = Project.listAll();
@@ -53,7 +61,9 @@ public class ProjectResource {
     public ProjectDTO createProject(ProjectDTO projectDTO) {
         User owner = User.findOrCreateUser(securityIdentity.getPrincipal().getName(), jwt);
         Project project = projectMapper.toEntity(projectDTO);
+        ProjectMember ownerMembership = new ProjectMember(project, owner, ProjectMemberRole.OWNER);
         project.setOwner(owner);
+        project.addMember(ownerMembership);
 
         project.persist();
         return projectMapper.toDTO(project);
@@ -88,5 +98,58 @@ public class ProjectResource {
     @Transactional
     public void deleteProject(@PathParam("id") Long id) {
         Project.deleteById(id);
+    }
+
+    @GET
+    @Path("/members")
+    public List<ProjectMemberDTO> getProjectMembers() {
+        List<ProjectMember> projectMembers = ProjectMember.listAll();
+        return projectMembers.stream().map(projectMemberMapper::toDTO).toList();
+    }
+
+    @GET
+    @Path("/{projectId}/members")
+    public List<ProjectMemberDTO> getProjectMembers(@PathParam("projectId") Long projectId) {
+        List<ProjectMember> projectMembers = ProjectMember.findByProjectId(projectId);
+        return projectMembers.stream().map(projectMemberMapper::toDTO).toList();
+    }
+
+    @GET
+    @Path("/{projectId}/members/user/{userId}")
+    public ProjectMemberDTO getProjectMembersByUserId(@PathParam("userId") Long userId,
+            @PathParam("projectId") Long projectId) {
+        ProjectMember projectMember = ProjectMember.findByProjectIdAndUserId(projectId, userId);
+        if (projectMember == null) {
+            throw new RuntimeException("Project member not found");
+        }
+        return projectMemberMapper.toDTO(projectMember);
+    }
+
+    @POST
+    @Path("/{projectId}/members")
+    @Transactional
+    public ProjectMemberDTO addProjectMember(@PathParam("projectId") Long projectId,
+            ProjectMemberDTO projectMemberDTO) {
+        Project project = Project.findById(projectId);
+        User user = User.findById(projectMemberDTO.userId());
+        if (project == null || user == null) {
+            throw new RuntimeException("Project or User not found");
+        }
+        ProjectMember projectMember = projectMemberMapper.toEntity(projectMemberDTO);
+        projectMember.setProject(project);
+        projectMember.setUser(user);
+        projectMember.persist();
+        return projectMemberMapper.toDTO(projectMember);
+    }
+
+    @DELETE
+    @Path("/{projectId}/members/{id}")
+    @Transactional
+    public void removeProjectMember(@PathParam("projectId") Long projectId, @PathParam("id") Long id) {
+        ProjectMember projectMember = ProjectMember.findById(id);
+        if (projectMember == null || !projectMember.getProject().id.equals(projectId)) {
+            throw new RuntimeException("Project member not found");
+        }
+        projectMember.delete();
     }
 }

@@ -24,7 +24,7 @@ function ProjectPage() {
   }
 
   if (!project) {
-    return <div>Project not found</div>;
+    return <Navigate to="/" />;
   }
 
   return (

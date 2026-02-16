@@ -1,8 +1,7 @@
-import { fetchUserProfilePicture } from "@/api/user";
 import { useUpdateProject } from "@/hooks/useProjects";
 import type { Project } from "@api/types";
-import { Ellipsis } from "lucide-react";
 import React from "react";
+import ProjectMembers from "./ProjectMembers";
 
 interface ProjectPageHeaderProps {
   project: Project;
@@ -11,8 +10,6 @@ interface ProjectPageHeaderProps {
 }
 function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
   const { mutate: updateProject } = useUpdateProject();
-  // const { data: project } = useProject(projectId);
-  const usersWithAccess = ["Alice", "Bob", "Charlie", "David"]; // Example data, replace with actual data
 
   React.useEffect(() => {
     if (!project) return;
@@ -122,33 +119,8 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
             Graph
           </label>
         </div>
-        <div>
-          {/* Where you can see people that have access to this project */}
-          {usersWithAccess.length > 0 && (
-            <div className="flex -space-x-2">
-              {usersWithAccess.map((username, index) => {
-                if (index >= 2) return null; // Show max 3 avatars, add a "+X" for the rest if needed
-                return (
-                  <img
-                    key={index}
-                    src={fetchUserProfilePicture(username)}
-                    alt={`${username}'s avatar`}
-                    className="rounded-full border-2 border-white"
-                  />
-                );
-              })}
-              {usersWithAccess.length > 3 && (
-                <div
-                  className="rounded-full border-2 border-white bg-gray-400 text-white text-xs flex items-center justify-center"
-                  style={{ width: 32, height: 32 }}
-                >
-                  +{usersWithAccess.length - 3}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <Ellipsis className="cursor-pointer stroke-stone-500" />
+
+        <ProjectMembers projectId={project.id} />
       </div>
     </div>
   );

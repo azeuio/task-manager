@@ -9,7 +9,7 @@ interface Task {
   title: string;
   description?: string;
   status: number; // 0 = To Do, 1 = In Progress, 2 = Done
-  projectId: string;
+  projectId: Project["id"];
   assigneesId?: string[];
   dueDate?: string;
 }

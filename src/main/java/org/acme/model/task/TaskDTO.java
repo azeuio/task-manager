@@ -9,5 +9,9 @@ public record TaskDTO(
         int status,
         int priority,
         long projectId,
-        Instant dueDate) {
+        Instant dueDate,
+        int createdById,
+        int assignedToId,
+        Instant createdAt,
+        Instant updatedAt) {
 }

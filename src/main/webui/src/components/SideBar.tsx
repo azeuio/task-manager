@@ -72,28 +72,37 @@ function SideBar() {
           className={
             "absolute hidden w-4/5 -translate-y-full flex-col divide-y divide-gray-300 rounded-md border border-gray-300 bg-white shadow-lg *:cursor-pointer *:px-4 *:py-2 peer-checked:flex first:*:pt-2 last:*:pb-2 *:hover:bg-gray-100"
           }
-        >
-          <div>Profile</div>
-          <div>Settings</div>
-          <div onClick={handleLogout}>Logout</div>
-        </div>
+        ></div>
       </div>
-      <label
-        htmlFor="user-menu-toggle"
-        className="relative flex cursor-pointer flex-row items-center px-4 py-4 hover:bg-gray-200"
-      >
-        <div className="size-8 rounded-full bg-black">
-          <img src={fetchUserProfilePicture(user?.username ?? "default")} />
-        </div>
-        <div className="ml-2">
-          <div>
-            {user ? user.username : "User Name"} {}
+      <div className="dropdown dropdown-top dropdown-end">
+        <div
+          tabIndex={0}
+          role="button"
+          className="btn btn-ghost w-full p-4 h-16 rounded-none"
+        >
+          <div className="size-8 rounded-full bg-black">
+            <img src={fetchUserProfilePicture(user?.username ?? "default")} />
           </div>
-          <div className="text-sm text-gray-500">
-            {user ? user.email : "user@example.com"}
+          <div className="ml-2 text-left">
+            <div>
+              {user ? user.username : "User Name"} {}
+            </div>
+            <div className="text-sm text-gray-500">
+              {user ? user.email : "user@example.com"}
+            </div>
           </div>
         </div>
-      </label>
+        <ul
+          tabIndex={-1}
+          className="dropdown-content menu w-52 rounded-box bg-base-100 border border-base-content/25 shadow-sm"
+        >
+          <li className="btn btn-ghost">Profile</li>
+          <li className="btn btn-ghost">Settings</li>
+          <li className="btn btn-ghost" onClick={handleLogout}>
+            Logout
+          </li>
+        </ul>
+      </div>
     </div>
   );
 }

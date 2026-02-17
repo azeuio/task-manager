@@ -1,5 +1,6 @@
 import type { Project, User } from "@/api/types";
 import { fetchUser, fetchUserProfilePicture } from "@/api/user";
+import { useAlert } from "@/hooks/useAlert";
 import {
   useCreateProjectMember,
   useProjectMembers,
@@ -10,9 +11,12 @@ interface ProjectAssigneesProps {
   projectId: Project["id"];
 }
 function ProjectMembers({ projectId }: ProjectAssigneesProps) {
+  const { showAlert } = useAlert();
   const { data: members } = useProjectMembers(projectId);
-  const { mutate: createProjectMember } = useCreateProjectMember(projectId);
+  const { mutate: createProjectMember, isError: isCreateError } =
+    useCreateProjectMember(projectId);
   const [projectMembers, setProjectMembers] = useState<User[]>([]);
+  const [isErrorHandled, setIsErrorHandled] = useState(false);
 
   useEffect(() => {
     console.log("Members data:", members);
@@ -33,6 +37,20 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
     fetchMembers();
   }, [members]);
 
+  useEffect(() => {
+    if (!isCreateError) return;
+    if (isErrorHandled) return;
+
+    console.error("Error creating project member");
+    showAlert(
+      "Failed to add member to the project. Please try again.",
+      "error",
+    );
+    return () => {
+      setIsErrorHandled(true);
+    };
+  }, [isCreateError, isErrorHandled, showAlert]);
+
   const onAddMember = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -40,7 +58,8 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
     const username = formData.get("username") as string;
     if (username) {
       console.log("Adding member:", username);
-      createProjectMember(username);
+      setIsErrorHandled(false);
+      createProjectMember({ username, role: "CONTRIBUTOR" });
     }
     e.currentTarget.reset(); // Clear the input field after submission
     const dropdown = document.getElementById("project-members-dropdown");
@@ -51,7 +70,7 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
 
   return (
     <details id="project-members-dropdown" className="dropdown dropdown-end">
-      <summary className="btn btn-ghost btn-sm rounded-full">
+      <summary className="btn btn-ghost rounded-full">
         {/* Where you can see people that have access to this project */}
         {(projectMembers?.length ?? 0) > 0 && (
           <div className="flex -space-x-2">

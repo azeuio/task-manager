@@ -3,6 +3,7 @@ import {
   fetchProjectMembers,
   removeProjectMember,
 } from "@/api/projectMembers";
+import type { ProjectMember } from "@/api/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 const PROJECT_MEMBERS_QUERY_KEY = "project-members";
@@ -17,8 +18,16 @@ export const useProjectMembers = (projectId: number) => {
 
 export const useCreateProjectMember = (projectId: number) => {
   return useMutation({
-    mutationFn: (username: string) =>
-      addProjectMember(projectId, username).then((response) => response.data),
+    mutationFn: ({
+      username,
+      role,
+    }: {
+      username: string;
+      role: ProjectMember["role"];
+    }) =>
+      addProjectMember(projectId, username, role).then(
+        (response) => response.data,
+      ),
     onSettled: (_data, _error, _variables, _onMutateResult, context) => {
       // Invalidate and refetch
       context.client.invalidateQueries({

@@ -14,6 +14,9 @@ keycloak.init({
 }).then((authenticated) => {
   if (!authenticated) {
     console.warn('User is not authenticated after Keycloak initialization');
+    keycloak.login()
+  } else {
+    startTokenRefresh(); // Start the token refresh mechanism
   }
   console.log('Keycloak initialized, authenticated:', authenticated);
 
@@ -34,3 +37,20 @@ createRoot(document.getElementById('root')!).render(
     </StrictMode>,
   );
 });
+
+const startTokenRefresh = () => {
+  setInterval(() => {
+    keycloak.updateToken(60) // refresh if token expires in 60 seconds
+      .then((refreshed) => {
+        if (refreshed) {
+          console.log("Token refreshed");
+        } else {
+          console.log("Token still valid");
+        }
+      })
+      .catch(() => {
+        console.error("Failed to refresh token");
+        keycloak.logout();
+      });
+  }, 30000); // check every 30 seconds
+}

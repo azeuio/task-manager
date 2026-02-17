@@ -1,60 +1,74 @@
-import React from 'react'
-import KanbanColumn from './kanban/KanbanColumn';
-import type { Project, Task } from '@/types/api';
-
+import React from "react";
+import KanbanColumn from "./kanban/KanbanColumn";
+import type { Project, Task } from "@/api/types";
+import { useTasks } from "@/hooks/useTasks";
+import AddTaskModal from "./AddTaskModal";
+import TaskSideBar from "./TaskSideBar";
 
 interface KanbanViewProps {
-  user: Keycloak.KeycloakProfile | null;
-  projectId?: string;
+  project: Project;
 }
-function KanbanView({ user, projectId }: KanbanViewProps) {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
-  // const [project, setProject] = React.useState<Project | null>(null);
-  const [statuses, setStatuses] = React.useState<string[]>(['To Do', 'In Progress', 'Done']);
+function KanbanView({ project }: KanbanViewProps) {
+  const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
+  const [statuses, setStatuses] = React.useState<string[]>([
+    "To Do",
+    "In Progress",
+    "Done",
+  ]);
   const [statusesOrder, setStatusesOrder] = React.useState<number[]>([0, 1, 2]);
-  const [unknownStatusTasks, setUnknownStatusTasks] = React.useState<Task[]>([]);
-
-  React.useEffect(() => {
-    const fetchProjectData = async () => {
-      // Placeholder for fetching project and tasks, replace with actual API calls
-      console.log(`Fetching data for project ${projectId}... User: ${user?.username}`);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const project: Project = { id: projectId!, name: `Project ${projectId}`, color: 'oklch(84.1% 0.238 128.85)', customStatuses: ['Backlog'], statusesOrder: [3, 0, 1, 2] };
-      if (project.customStatuses) {
-        if (project.statusesOrder) {
-          const orderedStatuses = project.statusesOrder.map(order => {
-            if (order < 3) return ['To Do', 'In Progress', 'Done'][order];
-            return project.customStatuses![order - 3];
-          });
-          setStatuses(orderedStatuses);
-          setStatusesOrder(project.statusesOrder);
-        } else {
-          setStatuses(['To Do', 'In Progress', 'Done', ...project.customStatuses]);
-        }
-      }
-      setTasks([
-        { id: '1', title: 'Task 1', status: 0, projectId: projectId! },
-        { id: '2', title: 'Task 2', status: 1, projectId: projectId! },
-        { id: '3', title: 'Task 3', status: 2, projectId: projectId! },
-      ]);
-
-      const order = project.statusesOrder ?? statusesOrder;
-      setUnknownStatusTasks(tasks.filter(task => !order.includes(task.status)));
-    }
-
-    fetchProjectData();
-  }, [projectId, statusesOrder, tasks, user?.username]);
+  const [unknownStatusTasks, setUnknownStatusTasks] = React.useState<Task[]>(
+    [],
+  );
+  const { data: tasks } = useTasks(project.id);
 
   return (
-    <div className='flex flex-row gap-4 h-full pb-4'>
+    <div className="flex flex-row gap-4 h-full drawer drawer-end">
       {unknownStatusTasks.length > 0 && (
-        <KanbanColumn title="Unknown Status" tasks={unknownStatusTasks} />
+        <KanbanColumn
+          title="Unknown Status"
+          tasks={unknownStatusTasks}
+          status={-1}
+          setSelectedTask={setSelectedTask}
+        />
       )}
       {statuses.map((status, index) => (
-        <KanbanColumn key={index} title={status} tasks={tasks.filter(task => statusesOrder[index] === task.status)} />
+        <KanbanColumn
+          key={index}
+          title={status}
+          tasks={
+            tasks?.data.filter(
+              (task) => statusesOrder[index] === task.status,
+            ) ?? []
+          }
+          status={statusesOrder[index] ?? -1}
+          setSelectedTask={setSelectedTask}
+        />
       ))}
+
+      <AddTaskModal
+        projectId={project.id}
+        statuses={statuses}
+        statusesOrder={statusesOrder}
+      />
+      {/* <div className="drawer drawer-end"> */}
+      <input
+        id="task-drawer-checkbox"
+        type="checkbox"
+        className="drawer-toggle"
+      />
+      {/* <div className="drawer-content">
+      </div> */}
+      <div className="drawer-side">
+        <label
+          htmlFor="task-drawer-checkbox"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
+        {selectedTask && <TaskSideBar task={selectedTask} />}
+      </div>
+      {/* </div> */}
     </div>
-  )
+  );
 }
 
-export default KanbanView
+export default KanbanView;

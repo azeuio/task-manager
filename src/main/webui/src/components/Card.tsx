@@ -7,7 +7,7 @@ interface CardProps {
 }
 function Card({ title, children, icon }: CardProps) {
   return (
-    <div className='bg-white rounded-md shadow shadow-stone-400 p-4 w-full'>
+    <div className='bg-base-100 rounded-md shadow shadow-base-300 p-4 w-full'>
       <div className='mb-4 flex flex-row justify-between' hidden={!title && !icon}>
         {title}
         {icon}

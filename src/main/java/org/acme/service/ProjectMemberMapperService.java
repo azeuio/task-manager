@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface ProjectMemberMapperService {
     @Mapping(source = "project.id", target = "projectId")
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.username", target = "username")
     ProjectMemberDTO toDTO(ProjectMember projectMember);
 
     @Mapping(source = "projectId", target = "project.id")

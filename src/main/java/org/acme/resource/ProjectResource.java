@@ -5,14 +5,15 @@ import java.util.Set;
 
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectDTO;
-import org.acme.model.project.ProjectStatus;
 import org.acme.model.project_member.ProjectMember;
 import org.acme.model.project_member.ProjectMemberDTO;
 import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
+import org.acme.model.user.UserDTO;
 import org.acme.service.ProjectMapperService;
 import org.acme.service.ProjectMemberMapperService;
 import org.acme.service.ProjectService;
+import org.acme.service.UserMapperService;
 import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -50,6 +51,9 @@ public class ProjectResource {
 
     @Inject
     ProjectService projectService;
+
+    @Inject
+    UserMapperService userMapper;
 
     @GET
     @Transactional // because of lazy loading of members
@@ -112,6 +116,14 @@ public class ProjectResource {
     @Transactional
     public void deleteProject(@PathParam("id") Long id) {
         Project.deleteById(id);
+    }
+
+    @GET
+    @Path("/{projectId}/users")
+    public Set<UserDTO> getProjectUsers(@PathParam("projectId") Long projectId) {
+        return projectService.getUsersByProjectId(projectId).stream()
+                .map(user -> userMapper.toDTO(user))
+                .collect(java.util.stream.Collectors.toSet());
     }
 
     @GET

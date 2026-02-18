@@ -1,5 +1,5 @@
 import type { User } from "@/api/types";
-import { fetchAllUsers, fetchUser } from "@/api/user";
+import { fetchAllUsers, fetchUser, fetchUserOfProject } from "@/api/user";
 import keycloak from "@/keycloak";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -36,6 +36,15 @@ export const useUser = (id: User["id"]) => {
     queryKey: ["user", id],
     queryFn: async () => {
       return fetchUser(id).then((response) => response.data);
+    },
+  });
+};
+
+export const useUserOfProject = (projectId: number) => {
+  return useQuery({
+    queryKey: ["project-members", projectId],
+    queryFn: async () => {
+      return fetchUserOfProject(projectId).then((response) => response.data);
     },
   });
 };

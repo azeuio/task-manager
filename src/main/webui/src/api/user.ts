@@ -32,3 +32,11 @@ export const registerKeycloakUser = (
     },
     data: { username, email, password },
   });
+
+export const fetchUserOfProject = (projectId: number) =>
+  fetchAuthenticated<User[]>(`/api/v1/projects/${projectId}/users`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });

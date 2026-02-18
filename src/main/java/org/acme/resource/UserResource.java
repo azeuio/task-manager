@@ -1,8 +1,5 @@
 package org.acme.resource;
 
-import java.util.Set;
-
-import org.acme.model.user.KeycloakUser;
 import org.acme.model.user.User;
 import org.acme.model.user.UserDTO;
 import org.acme.service.UserMapperService;
@@ -15,7 +12,6 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;

@@ -47,8 +47,14 @@ public class User extends PanacheEntity {
     }
 
     // Getters and Setters
-    // public Long getId() { return id; }
-    // public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -73,29 +79,10 @@ public class User extends PanacheEntity {
         this.email = email;
     }
 
-    // public Set<String> getRoles() { return roles; }
-    // public void setRoles(Set<String> roles) { this.roles = roles; }
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    // public UserStats getStats() {
-    // return stats;
-    // }
-
-    // public void setStats(UserStats stats) {
-    // this.stats = stats;
-    // }
-
-    // public Set<Project> getOwnedProjects() { return ownedProjects; }
-    // public void setOwnedProjects(Set<Project> ownedProjects) { this.ownedProjects
-    // = ownedProjects; }
-    // public Set<Task> getAssignedTasks() { return assignedTasks; }
-    // public void setAssignedTasks(Set<Task> assignedTasks) { this.assignedTasks =
-    // assignedTasks; }
-    // public Set<Task> getCreatedTasks() { return createdTasks; }
-    // public void setCreatedTasks(Set<Task> createdTasks) { this.createdTasks =
-    // createdTasks; }
     public Set<ProjectMember> getProjectMemberships() {
         return projectMemberships;
     }
@@ -103,13 +90,4 @@ public class User extends PanacheEntity {
     public void setProjectMemberships(Set<ProjectMember> projectMemberships) {
         this.projectMemberships = projectMemberships;
     }
-
-    // public static User getUserFromUsername(String username) {
-    // return find("username", username).firstResult();
-    // }
-
-    // public String getEmail() {
-    // // from Keycloak
-    // return username + "@example.com";
-    // }
 }

@@ -4,33 +4,29 @@ import type { Project, Task } from "@/api/types";
 import { useTasks } from "@/hooks/useTasks";
 import AddTaskModal from "./AddTaskModal";
 import TaskSideBar from "./TaskSideBar";
+import { useStatuses } from "@/hooks/useStatuses";
 
 interface KanbanViewProps {
   project: Project;
 }
 function KanbanView({ project }: KanbanViewProps) {
   const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
-  const [statuses, setStatuses] = React.useState<string[]>([
-    "To Do",
-    "In Progress",
-    "Done",
-  ]);
-  const [statusesOrder, setStatusesOrder] = React.useState<number[]>([0, 1, 2]);
-  const [unknownStatusTasks, setUnknownStatusTasks] = React.useState<Task[]>(
-    [],
-  );
+  const { statuses, statusesOrder } = useStatuses(project.id);
+  // const [unknownStatusTasks, setUnknownStatusTasks] = React.useState<Task[]>(
+  //   [],
+  // );
   const { data: tasks } = useTasks(project.id);
 
   return (
     <div className="flex flex-row gap-4 h-full drawer drawer-end">
-      {unknownStatusTasks.length > 0 && (
+      {/* {unknownStatusTasks.length > 0 && (
         <KanbanColumn
           title="Unknown Status"
           tasks={unknownStatusTasks}
           status={-1}
           setSelectedTask={setSelectedTask}
         />
-      )}
+      )} */}
       {statuses.map((status, index) => (
         <KanbanColumn
           key={index}
@@ -62,7 +58,9 @@ function KanbanView({ project }: KanbanViewProps) {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        {selectedTask && <TaskSideBar task={selectedTask} />}
+        {selectedTask && (
+          <TaskSideBar task={selectedTask} setSelectedTask={setSelectedTask} />
+        )}
       </div>
       {/* </div> */}
     </div>

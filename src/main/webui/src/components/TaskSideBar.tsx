@@ -1,13 +1,18 @@
 import type { Task } from "@/api/types";
 import { useUser } from "@/hooks/useUser";
 import TaskDescription from "./sidebar/TaskDescription";
-import { useDeleteTask } from "@/hooks/useTasks";
+import { useDeleteTask, useUpdateTask } from "@/hooks/useTasks";
+import ChooseStatusDropdown from "./ChooseStatusDropdown";
+import { useStatuses } from "@/hooks/useStatuses";
 
 interface TaskSideBarProps {
   task: Task;
+  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
 }
-function TaskSideBar({ task }: TaskSideBarProps) {
+function TaskSideBar({ task, setSelectedTask }: TaskSideBarProps) {
   const { data: taskCreator } = useUser(task.createdById);
+  const { statuses, statusesOrder } = useStatuses(task.projectId);
+  const { mutate: updateTask } = useUpdateTask(task.projectId);
   const { mutate: deleteTask } = useDeleteTask(task.projectId);
   if (task.id < 0) {
     return (
@@ -21,6 +26,28 @@ function TaskSideBar({ task }: TaskSideBarProps) {
   const onDeleteTask = () => {
     deleteTask(task.id);
     document.getElementById("task-drawer-checkbox")?.click();
+  };
+
+  const onUpdateStatus = (event: React.MouseEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    const statusValue = target.value;
+    const statusIndex = statusesOrder.indexOf(parseInt(statusValue, 10));
+    if (statusIndex !== -1) {
+      updateTask(
+        {
+          taskId: task.id,
+          updatedTask: {
+            status: statusesOrder[statusIndex],
+          },
+        },
+        {
+          onSuccess: (response) => {
+            console.log("Task updated successfully:", response);
+            setSelectedTask(response.data);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -40,13 +67,12 @@ function TaskSideBar({ task }: TaskSideBarProps) {
           <div className="divider my-2" />
           <div className="flex flex-col gap-2 p-2">
             <h5 className="rounded-t-box">Status</h5>
-            <p className="mb-2">
-              {task.status === 0
-                ? "To Do"
-                : task.status === 1
-                  ? "In Progress"
-                  : "Done"}
-            </p>
+            <ChooseStatusDropdown
+              currentStatus={task.status}
+              statuses={statuses}
+              statusesOrder={statusesOrder}
+              updateStatusButton={onUpdateStatus}
+            />
           </div>
           <div className="divider divider-end" />
           <div className="flex flex-col gap-2 p-2">

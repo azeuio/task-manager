@@ -1,5 +1,5 @@
 import { fetchAuthenticated } from "./fetchAuthenticated";
-import type { Project, Task } from "./types";
+import type { Project, Task, TaskCreateRequest } from "./types";
 
 export const fetchAllTasks = (projectId: Project["id"]) =>
   fetchAuthenticated<Task[]>(`/api/v1/projects/${projectId}/tasks`, {
@@ -19,7 +19,7 @@ export const fetchTask = (projectId: Project["id"], taskId: Task["id"]) =>
 
 export const createTask = (
   projectId: Project["id"],
-  newTask: Omit<Task, "id" | "projectId">,
+  newTask: TaskCreateRequest,
 ) =>
   fetchAuthenticated<Task>(`/api/v1/projects/${projectId}/tasks`, {
     method: "POST",
@@ -32,7 +32,9 @@ export const createTask = (
 export const updateTask = (
   projectId: Project["id"],
   taskId: Task["id"],
-  updatedTask: Partial<Omit<Task, "id" | "projectId">>,
+  updatedTask: Partial<
+    Omit<Task, "id" | "projectId" | "createdAt" | "updatedAt">
+  >,
 ) =>
   fetchAuthenticated<Task>(`/api/v1/projects/${projectId}/tasks/${taskId}`, {
     method: "PATCH",

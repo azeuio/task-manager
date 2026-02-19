@@ -18,6 +18,11 @@ interface Task {
   updatedAt: string;
 }
 
+type TaskCreateRequest = Omit<
+  Task,
+  "id" | "projectId" | "createdById" | "createdAt" | "updatedAt"
+>;
+
 interface Project {
   id: number;
   name: string;
@@ -43,4 +48,11 @@ interface ProjectMember {
   joinedAt: string;
 }
 
-export type { ApiResponse, Task, Project, User, ProjectMember };
+export type {
+  ApiResponse,
+  Task,
+  TaskCreateRequest,
+  Project,
+  User,
+  ProjectMember,
+};

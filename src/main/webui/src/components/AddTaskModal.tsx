@@ -1,6 +1,7 @@
 import type { Project } from "@/api/types";
 import { useCreateTask } from "@/hooks/useTasks";
 import React from "react";
+import ChooseStatusDropdown from "./ChooseStatusDropdown";
 
 interface AddTaskModalProps {
   projectId: Project["id"];
@@ -26,7 +27,6 @@ function AddTaskModal({
       title,
       description,
       status,
-      projectId,
     });
   };
 
@@ -57,36 +57,11 @@ function AddTaskModal({
           className="textarea textarea-bordered w-full mt-2"
           name="description"
         ></textarea>
-        <div className="dropdown dropdown-top">
-          <div
-            tabIndex={0}
-            id="status-dropdown"
-            role="button"
-            className="btn m-1"
-          >
-            Click
-          </div>
-          <ul
-            tabIndex={-1}
-            className="dropdown-content dropdown-top menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-          >
-            {statusesOrder.map((status, index) => (
-              <li key={index}>
-                <label>
-                  <input
-                    name="status"
-                    type="radio"
-                    value={status}
-                    className="peer radio radio-primary"
-                    defaultChecked={index === 0}
-                    onClick={updateStatusButton}
-                  />{" "}
-                  {statuses[index]}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ChooseStatusDropdown
+          statuses={statuses}
+          statusesOrder={statusesOrder}
+          updateStatusButton={updateStatusButton}
+        />
         <div className="modal-action">
           <button className="btn">Cancel</button>
           <button className="btn btn-primary">Add Task</button>

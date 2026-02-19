@@ -2,13 +2,17 @@ import React from "react";
 import keycloak from "../keycloak";
 import StatsCard from "../components/StatsCard";
 import { CircleAlert, FolderKanban, TriangleAlert } from "lucide-react";
-import Card from "../components/Card";
 import YourProjectsCard from "@/components/YourProjectsCard";
 import { useProjects } from "@/hooks/useProjects";
 import StatsHero from "@/components/dashboard/StatsHero";
+import RecentTasksCard from "@/components/dashboard/RecentTasksCard";
+import { useUserByUsername } from "@/hooks/useUser";
 
 function Dashboard() {
-  const [user, setUser] = React.useState<Keycloak.KeycloakProfile | null>(null);
+  const [keycloakUser, setUser] =
+    React.useState<Keycloak.KeycloakProfile | null>(null);
+  const { data: user } = useUserByUsername(keycloakUser?.username ?? "");
+
   const { data: projects } = useProjects();
 
   React.useEffect(() => {
@@ -23,58 +27,17 @@ function Dashboard() {
       });
   }, []);
 
-  const getRecentTasks = () => {
-    // Placeholder for fetching recent tasks, replace with actual API call
-    return [
-      {
-        id: 1,
-        title: "Task 1",
-        project: "Project 1",
-        dueDate: "2024-06-30",
-        status: 0,
-      },
-      {
-        id: 2,
-        title: "Task 2",
-        project: "Project 2",
-        dueDate: "2024-07-05",
-        status: 1,
-      },
-      {
-        id: 3,
-        title: "Task 3",
-        project: "Project 1",
-        dueDate: "2024-06-25",
-        status: 2,
-      },
-      {
-        id: 4,
-        title: "Task 4",
-        project: "Project 2",
-        dueDate: null,
-        status: 2,
-      },
-      {
-        id: 5,
-        title: "Task 5",
-        project: "Project 1",
-        dueDate: null,
-        status: 0,
-      },
-    ];
-  };
-
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2 border-b border-base-content/25 pb-4">
         <h1 className="font-bold text-3xl">
-          Welcome back, {user?.firstName ?? "user"}
+          Welcome back, {keycloakUser?.firstName ?? "user"}
         </h1>
         <p className="text-gray-600">
           Here's an overview of your tasks and projects
         </p>
       </div>
-      <StatsHero username={user?.username ?? ""} />
+      <StatsHero username={keycloakUser?.username ?? ""} />
       <div className="flex flex-row gap-4" hidden>
         <StatsCard
           title="Total projects"
@@ -94,48 +57,7 @@ function Dashboard() {
       </div>
       <div className="flex flex-row gap-8">
         <YourProjectsCard />
-        <Card title={<div className="font-bold text-lg">Recent tasks</div>}>
-          <div className="w-full bg-base-content/25 h-0.5 mb-4" />
-          <ul className="flex flex-col gap-2">
-            {getRecentTasks().map((task) => (
-              <li key={task.id} className="flex flex-row justify-between">
-                <div>
-                  <div className="font-semibold">{task.title}</div>
-                  <div className="text-sm text-gray-500">
-                    {task.project}{" "}
-                    {task.dueDate
-                      ? " - " + new Date(task.dueDate).toLocaleDateString()
-                      : ""}{" "}
-                  </div>
-                </div>
-                <div className="text-sm flex items-center gap-2">
-                  {task.status < 2 &&
-                    task.dueDate &&
-                    new Date(task.dueDate) < new Date() && (
-                      <span className="rounded-full bg-red-100 py-1 px-2 text-red-500">
-                        Overdue
-                      </span>
-                    )}
-                  {task.status === 0 && (
-                    <span className="rounded-full bg-amber-100 py-1 px-2 text-amber-500">
-                      To do
-                    </span>
-                  )}
-                  {task.status === 1 && (
-                    <span className="rounded-full bg-blue-100 py-1 px-2 text-blue-500">
-                      In progress
-                    </span>
-                  )}
-                  {task.status === 2 && (
-                    <span className="rounded-full bg-green-100 py-1 px-2 text-green-500">
-                      Done
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <RecentTasksCard userId={user?.id ?? -1} />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
-import type { Project, Task, TaskCreateRequest } from "@api/types";
+import type { Project, Task, TaskCreateRequest, User } from "@api/types";
 import {
   createTask,
   deleteTask,
   fetchAllTasks,
+  fetchAllTasksForUser,
   fetchTask,
   updateTask,
 } from "@/api/task";
@@ -21,6 +22,15 @@ export const useTask = (projectId: Project["id"], taskId: Task["id"]) => {
   return useQuery({
     queryKey: [TASKS_QUERY_KEY, projectId, taskId],
     queryFn: () => fetchTask(projectId, taskId),
+  });
+};
+
+export const useMyTasks = (userId: User["id"]) => {
+  return useQuery({
+    queryKey: [TASKS_QUERY_KEY, "my-tasks", userId],
+    queryFn: () =>
+      fetchAllTasksForUser(userId).then((response) => response.data),
+    enabled: userId !== undefined && userId >= 0,
   });
 };
 

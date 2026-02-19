@@ -1,5 +1,10 @@
 import type { User } from "@/api/types";
-import { fetchAllUsers, fetchUser, fetchUserOfProject } from "@/api/user";
+import {
+  fetchAllUsers,
+  fetchUser,
+  fetchUserByUsername,
+  fetchUserOfProject,
+} from "@/api/user";
 import keycloak from "@/keycloak";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -37,6 +42,16 @@ export const useUser = (id: User["id"]) => {
     queryFn: async () => {
       return fetchUser(id).then((response) => response.data);
     },
+  });
+};
+
+export const useUserByUsername = (username: User["username"]) => {
+  return useQuery({
+    queryKey: ["user-by-username", username],
+    queryFn: async () => {
+      return fetchUserByUsername(username);
+    },
+    enabled: username !== undefined && username.trim() !== "",
   });
 };
 

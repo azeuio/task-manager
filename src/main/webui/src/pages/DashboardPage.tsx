@@ -4,9 +4,12 @@ import StatsCard from "../components/StatsCard";
 import { CircleAlert, FolderKanban, TriangleAlert } from "lucide-react";
 import Card from "../components/Card";
 import YourProjectsCard from "@/components/YourProjectsCard";
+import { useProjects } from "@/hooks/useProjects";
+import StatsHero from "@/components/dashboard/StatsHero";
 
 function Dashboard() {
   const [user, setUser] = React.useState<Keycloak.KeycloakProfile | null>(null);
+  const { data: projects } = useProjects();
 
   React.useEffect(() => {
     keycloak
@@ -71,10 +74,11 @@ function Dashboard() {
           Here's an overview of your tasks and projects
         </p>
       </div>
-      <div className="flex flex-row gap-4">
+      <StatsHero username={user?.username ?? ""} />
+      <div className="flex flex-row gap-4" hidden>
         <StatsCard
           title="Total projects"
-          value="5"
+          value={projects?.length ?? 0}
           icon={<FolderKanban className="stroke-base-content" />}
         />
         <StatsCard

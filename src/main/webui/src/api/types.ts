@@ -38,6 +38,8 @@ interface User {
   username: string;
   displayName: string;
   email: string;
+  projectIds: number[];
+  createdAt: string;
 }
 
 interface ProjectMember {

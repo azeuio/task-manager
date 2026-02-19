@@ -1,9 +1,10 @@
 import {
   addProjectMember,
   fetchProjectMembers,
+  fetchProjectMembersOfUser,
   removeProjectMember,
 } from "@/api/projectMembers";
-import type { ProjectMember } from "@/api/types";
+import type { ProjectMember, User } from "@/api/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 const PROJECT_MEMBERS_QUERY_KEY = "project-members";
@@ -13,6 +14,7 @@ export const useProjectMembers = (projectId: number) => {
     queryKey: [PROJECT_MEMBERS_QUERY_KEY, projectId],
     queryFn: () =>
       fetchProjectMembers(projectId).then((response) => response.data),
+    enabled: projectId !== undefined && projectId > 0,
   });
 };
 
@@ -49,5 +51,14 @@ export const useRemoveProjectMember = (projectId: number) => {
         queryKey: [PROJECT_MEMBERS_QUERY_KEY, projectId],
       });
     },
+  });
+};
+
+export const useProjectMemberOfUser = (userid: User["id"]) => {
+  return useQuery({
+    queryKey: [PROJECT_MEMBERS_QUERY_KEY, userid],
+    queryFn: () =>
+      fetchProjectMembersOfUser(userid).then((response) => response.data),
+    enabled: userid !== undefined && userid >= 0,
   });
 };

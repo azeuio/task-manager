@@ -1,5 +1,5 @@
 import { fetchAuthenticated } from "./fetchAuthenticated";
-import type { Project, Task, TaskCreateRequest } from "./types";
+import type { Project, Task, TaskCreateRequest, User } from "./types";
 
 export const fetchAllTasks = (projectId: Project["id"]) =>
   fetchAuthenticated<Task[]>(`/api/v1/projects/${projectId}/tasks`, {
@@ -47,4 +47,12 @@ export const updateTask = (
 export const deleteTask = (projectId: Project["id"], taskId: Task["id"]) =>
   fetchAuthenticated<void>(`/api/v1/projects/${projectId}/tasks/${taskId}`, {
     method: "DELETE",
+  });
+
+export const fetchAllTasksForUser = (userId: User["id"]) =>
+  fetchAuthenticated<Task[]>(`/api/v1/users/${userId}/tasks`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });

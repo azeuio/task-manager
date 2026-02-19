@@ -40,3 +40,11 @@ export const fetchUserOfProject = (projectId: number) =>
       "Content-Type": "application/json",
     },
   });
+
+export const fetchUserByUsername = (username: User["username"]) =>
+  fetchAuthenticated<User>(`/api/v1/users/username/${username}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => response.data ?? null);

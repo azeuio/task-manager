@@ -1,5 +1,5 @@
 import { fetchAuthenticated } from "./fetchAuthenticated";
-import type { ProjectMember } from "./types";
+import type { ProjectMember, User } from "./types";
 
 export const fetchProjectMembers = (projectId: number) =>
   fetchAuthenticated<ProjectMember[]>(`/api/v1/projects/${projectId}/members`, {
@@ -8,6 +8,28 @@ export const fetchProjectMembers = (projectId: number) =>
       "Content-Type": "application/json",
     },
   });
+
+export const fetchProjectMember = (projectId: number, username: string) =>
+  fetchAuthenticated<ProjectMember>(
+    `/api/v1/projects/${projectId}/members/${username}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+export const fetchProjectMembersOfUser = (userid: User["id"]) =>
+  fetchAuthenticated<ProjectMember[]>(
+    `/api/v1/users/${userid}/projects-memberships`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
 export const addProjectMember = (
   projectId: number,

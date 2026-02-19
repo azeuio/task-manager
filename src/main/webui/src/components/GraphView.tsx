@@ -28,6 +28,7 @@ function useGraphData(
         ...(tasks?.map((task) => ({
           type: "task" as TaskNodeType,
           id: toTaskId(task.id),
+          status: task.status,
         })) ?? []),
         ...statuses.map((status: unknown, index: number) => ({
           type: "status" as TaskNodeType,
@@ -197,6 +198,7 @@ function GraphView({ projectId }: GraphViewProps) {
     const color = getColor(type);
     const [nodeSize, fontSize] = calculteNodeSize(ctx, label, globalScale);
 
+    node.nodeSize = nodeSize;
     switch (type) {
       case "status":
         {
@@ -332,8 +334,64 @@ function GraphView({ projectId }: GraphViewProps) {
     return rootStyle.getPropertyValue("--color-neutral");
   };
 
-  const getMaxNodeSize = () => {
-    return Math.max(...Object.values(maxNodeSize)) * 5;
+  const setLinkLength = (link: GraphLinkObject) => {
+    const source = link.source!;
+    const target = link.target!;
+    if (typeof source !== "object" || typeof target !== "object") {
+      return 100;
+    }
+    const types = [source.type, target.type].sort().join("-");
+    if (types === "status-task") {
+      return 100;
+    }
+    if (types === "task-user") {
+      const task = source.type === "task" ? source : target;
+      const user = source.type === "user" ? source : target;
+      return (
+        user.nodeSize *
+        5 *
+        (1 + Number(task.status === 2) * 1.1) *
+        (1 + Number(task.status === 0) * -0.5)
+      );
+    }
+    return 100;
+  };
+
+  const setLinkStrength = (link: GraphLinkObject) => {
+    const source = link.source!;
+    const target = link.target!;
+    if (typeof source !== "object" || typeof target !== "object") {
+      return 0.5;
+    }
+    const types = [source.type, target.type].sort().join("-");
+    if (types === "status-task") {
+      return 0.01;
+    }
+    if (types === "task-user") {
+      return 0.1;
+    }
+    return 0.05;
+  };
+
+  const setLinkWidth = (link: GraphLinkObject) => {
+    const source = link.source!;
+    const target = link.target!;
+    if (typeof source !== "object" || typeof target !== "object") {
+      return 3;
+    }
+    const types = [source.type, target.type].sort().join("-");
+    if (types === "status-task") {
+      return 3;
+    }
+    if (types === "task-user") {
+      const task = source.type === "task" ? source : target;
+      return (
+        3 *
+        (1 + Number(task.status === 2) * -0.5) *
+        (1 + Number(task.status === 0) * 1.25)
+      );
+    }
+    return 3;
   };
 
   return (
@@ -344,7 +402,9 @@ function GraphView({ projectId }: GraphViewProps) {
         customRender={renderNode}
         setLinkColor={setLinkColor}
         setNodeSize={setNodeSize}
-        linkDistance={getMaxNodeSize()}
+        setLinkDistance={setLinkLength}
+        setLinkStrength={setLinkStrength}
+        setLinkWidth={setLinkWidth}
       />
     </div>
   );

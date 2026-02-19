@@ -18,7 +18,9 @@ interface GraphProps {
   ) => Promise<void> | void;
   setLinkColor: (link: GraphLinkObject) => string;
   setNodeSize: (node: NodeObject) => number;
-  linkDistance: number;
+  setLinkDistance: (link: GraphLinkObject) => number;
+  setLinkStrength?: (link: GraphLinkObject) => number;
+  setLinkWidth?: (link: GraphLinkObject) => number;
 }
 
 function Graph({
@@ -27,16 +29,19 @@ function Graph({
   customRender,
   setLinkColor,
   setNodeSize,
-  linkDistance,
+  setLinkDistance,
+  setLinkStrength,
+  setLinkWidth,
 }: GraphProps) {
   const fgRef =
     useRef<ForceGraphMethods<GraphNodeType, GraphLinkObject>>(undefined);
   const [size, setSize] = useState<ContainerSize>({ width: 0, height: 0 });
 
   useEffect(() => {
-    fgRef.current?.d3Force("link")?.distance(linkDistance);
+    fgRef.current?.d3Force("link")?.distance(setLinkDistance);
+    fgRef.current?.d3Force("link")?.strength(setLinkStrength);
     fgRef.current?.d3Force("center")?.strength(0.1);
-  }, [linkDistance]);
+  }, [setLinkDistance, setLinkStrength]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,7 +64,7 @@ function Graph({
       graphData={data}
       nodeLabel="id"
       nodeAutoColorBy="id"
-      linkWidth={3}
+      linkWidth={setLinkWidth}
       linkColor={setLinkColor}
       linkDirectionalArrowLength={1}
       linkDirectionalArrowRelPos={1}

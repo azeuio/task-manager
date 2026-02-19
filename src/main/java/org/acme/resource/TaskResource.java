@@ -54,19 +54,29 @@ public class TaskResource {
 
     @PATCH
     @Path("/{id}")
+    @Transactional
     public TaskDTO updateTask(@PathParam("id") Long id, TaskDTO updatedTaskDTO) {
         Task existing = Task.findById(id);
 
         if (existing == null) {
             throw new RuntimeException("Task not found");
         }
-        existing.setTitle(updatedTaskDTO.title());
-        existing.setDescription(updatedTaskDTO.description());
-        existing.setStatus(updatedTaskDTO.status());
-        existing.setPriority(updatedTaskDTO.priority());
-        existing.setDueDate(updatedTaskDTO.dueDate());
+        if (updatedTaskDTO.title() != null) {
+            existing.setTitle(updatedTaskDTO.title());
+        }
+        if (updatedTaskDTO.description() != null) {
+            existing.setDescription(updatedTaskDTO.description());
+        }
+        if (updatedTaskDTO.status() != null) {
+            existing.setStatus(updatedTaskDTO.status());
+        }
+        if (updatedTaskDTO.priority() != null) {
+            existing.setPriority(updatedTaskDTO.priority());
+        }
+        if (updatedTaskDTO.dueDate() != null) {
+            existing.setDueDate(updatedTaskDTO.dueDate());
+        }
         existing.setUpdatedAt(java.time.Instant.now());
-        existing.persist();
         return taskMapper.toDTO(existing);
     }
 
@@ -78,7 +88,12 @@ public class TaskResource {
             throw new RuntimeException("Project not found");
         }
         User createdBy = userService.findUser(securityIdentity.getPrincipal().getName());
-        Task newTask = new Task(taskDTO.title(), taskDTO.description(), taskDTO.status(), taskDTO.priority(), project,
+        String title = taskDTO.title() != null ? taskDTO.title() : "Untitled Task";
+        String description = taskDTO.description() != null ? taskDTO.description() : "";
+        Integer status = taskDTO.status() != null ? taskDTO.status() : 0;
+        Integer priority = taskDTO.priority() != null ? taskDTO.priority() : 0;
+
+        Task newTask = new Task(title, description, status, priority, project,
                 createdBy);
         newTask.persist();
         return taskMapper.toDTO(newTask);

@@ -6,12 +6,12 @@ public record TaskDTO(
         Long id,
         String title,
         String description,
-        int status,
-        int priority,
+        Integer status,
+        Integer priority,
         long projectId,
         Instant dueDate,
-        int createdById,
-        int assignedToId,
+        Integer createdById,
+        Integer assignedToId,
         Instant createdAt,
         Instant updatedAt) {
 }

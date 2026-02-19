@@ -42,7 +42,9 @@ function ProjectPage() {
       <div className="flex flex-col gap-4 h-full max-h-full">
         <div className="overflow-x-auto h-full">
           {view === "kanban" && <KanbanView project={project} />}
-          {view === "graph" && <GraphView />}
+          {view === "graph" && (
+            <GraphView projectId={parseInt(projectId!, 10)} />
+          )}
         </div>
       </div>
     </SidebarLayout>

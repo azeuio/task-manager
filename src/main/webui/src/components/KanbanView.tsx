@@ -36,9 +36,7 @@ function KanbanView({ project }: KanbanViewProps) {
           key={index}
           title={status}
           tasks={
-            tasks?.data.filter(
-              (task) => statusesOrder[index] === task.status,
-            ) ?? []
+            tasks?.filter((task) => statusesOrder[index] === task.status) ?? []
           }
           status={statusesOrder[index] ?? -1}
           setSelectedTask={setSelectedTask}

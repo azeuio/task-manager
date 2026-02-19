@@ -13,7 +13,7 @@ const TASKS_QUERY_KEY = "tasks";
 export const useTasks = (projectId: Project["id"]) => {
   return useQuery({
     queryKey: [TASKS_QUERY_KEY, projectId],
-    queryFn: () => fetchAllTasks(projectId),
+    queryFn: () => fetchAllTasks(projectId).then((response) => response.data),
   });
 };
 

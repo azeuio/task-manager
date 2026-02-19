@@ -19,7 +19,6 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
   const [isErrorHandled, setIsErrorHandled] = useState(false);
 
   useEffect(() => {
-    console.log("Members data:", members);
     const fetchMembers = async () => {
       if (members) {
         try {
@@ -96,7 +95,7 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
           </div>
         )}
       </summary>
-      <div className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52">
+      <div className="dropdown-content menu p-2 shadow bg-base-100 border border-base-content/20 rounded-box w-52">
         {projectMembers?.length === 0 ? (
           <div className="p-2">No members have access to this project.</div>
         ) : (

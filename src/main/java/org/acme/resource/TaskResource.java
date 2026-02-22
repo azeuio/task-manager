@@ -76,6 +76,13 @@ public class TaskResource {
         if (updatedTaskDTO.dueDate() != null) {
             existing.setDueDate(updatedTaskDTO.dueDate());
         }
+        if (updatedTaskDTO.assignedToId() != null) {
+            User assignedTo = User.findById(updatedTaskDTO.assignedToId());
+            if (assignedTo == null) {
+                throw new RuntimeException("Assigned user not found");
+            }
+            existing.setAssignedTo(assignedTo);
+        }
         existing.setUpdatedAt(java.time.Instant.now());
         return taskMapper.toDTO(existing);
     }

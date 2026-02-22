@@ -59,7 +59,11 @@ function KanbanView({ project }: KanbanViewProps) {
           className="drawer-overlay"
         ></label>
         {selectedTask && (
-          <TaskSideBar task={selectedTask} setSelectedTask={setSelectedTask} />
+          <TaskSideBar
+            projectId={project.id}
+            taskId={selectedTask.id}
+            setSelectedTask={setSelectedTask}
+          />
         )}
       </div>
       {/* </div> */}

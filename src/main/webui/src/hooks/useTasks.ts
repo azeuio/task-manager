@@ -21,7 +21,8 @@ export const useTasks = (projectId: Project["id"]) => {
 export const useTask = (projectId: Project["id"], taskId: Task["id"]) => {
   return useQuery({
     queryKey: [TASKS_QUERY_KEY, projectId, taskId],
-    queryFn: () => fetchTask(projectId, taskId),
+    queryFn: () =>
+      fetchTask(projectId, taskId).then((response) => response.data),
   });
 };
 

@@ -36,12 +36,13 @@ export const useAllUsers = () => {
   });
 };
 
-export const useUser = (id: User["id"]) => {
+export const useUser = (id?: User["id"]) => {
   return useQuery({
     queryKey: ["user", id],
     queryFn: async () => {
-      return fetchUser(id).then((response) => response.data);
+      return fetchUser(id!).then((response) => response.data);
     },
+    enabled: id !== undefined && id >= 0,
   });
 };
 

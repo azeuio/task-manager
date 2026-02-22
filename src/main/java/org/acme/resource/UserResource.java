@@ -14,15 +14,19 @@ import org.acme.service.UserMapperService;
 import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Sort;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/api/v1/users")
@@ -94,10 +98,26 @@ public class UserResource {
 
     @GET
     @Path("/{id}/tasks")
-    public List<TaskDTO> getUserTasks(@PathParam("id") Integer userid) {
-        List<Task> tasks = Task.list("createdBy.id", userid);
-        List<Task> assignedTasks = Task.list("assignedTo.id", userid);
-        tasks.addAll(assignedTasks);
-        return tasks.stream().map(taskMapper::toDTO).toList();
+    public List<TaskDTO> getUserTasks(@PathParam("id") Integer userid,
+            @QueryParam("limit") @DefaultValue("20") String limit,
+            @QueryParam("offset") @DefaultValue("0") String offset) {
+        // sorted by due date ascending or created date if due date is null
+        PanacheQuery<Task> query = Task.find("assignedTo.id = ?1",
+                Sort
+                        .by("dueDate", Sort.NullPrecedence.NULLS_LAST).ascending()
+                        .and("createdAt").ascending(),
+                userid);
+        if (limit == null && offset == null) {
+            return query
+                    .list()
+                    .stream()
+                    .map(taskMapper::toDTO)
+                    .toList();
+        }
+        return query.page(Integer.parseInt(offset), Integer.parseInt(limit))
+                .list()
+                .stream()
+                .map(taskMapper::toDTO)
+                .toList();
     }
 }

@@ -1,9 +1,11 @@
 import type { Task } from "@/api/types";
-import { useUser } from "@/hooks/useUser";
+import { useUser, useUserOfProject } from "@/hooks/useUser";
 import TaskDescription from "./sidebar/TaskDescription";
 import { useDeleteTask, useUpdateTask } from "@/hooks/useTasks";
 import ChooseStatusDropdown from "./ChooseStatusDropdown";
 import { useStatuses } from "@/hooks/useStatuses";
+import ChooseUserDropdown from "./ChooseUser";
+import { useState } from "react";
 
 interface TaskSideBarProps {
   task: Task;
@@ -14,6 +16,11 @@ function TaskSideBar({ task, setSelectedTask }: TaskSideBarProps) {
   const { statuses, statusesOrder } = useStatuses(task.projectId);
   const { mutate: updateTask } = useUpdateTask(task.projectId);
   const { mutate: deleteTask } = useDeleteTask(task.projectId);
+  const { data: users } = useUserOfProject(task.projectId);
+  const [assignedUser, setAssignedUser] = useState<number | undefined>(
+    undefined,
+  );
+
   if (task.id < 0) {
     return (
       <div className="menu bg-base-100 min-h-full w-1/2 p-4">
@@ -22,6 +29,28 @@ function TaskSideBar({ task, setSelectedTask }: TaskSideBarProps) {
       </div>
     );
   }
+
+  const onUpdateAssignedUser = (event: React.MouseEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    const userIdValue = target.value;
+    const userId = parseInt(userIdValue, 10);
+    if (!isNaN(userId)) {
+      setAssignedUser(userId);
+      updateTask(
+        {
+          taskId: task.id,
+          updatedTask: {
+            assignedToId: userId,
+          },
+        },
+        {
+          onSuccess: (response) => {
+            setSelectedTask(response.data);
+          },
+        },
+      );
+    }
+  };
 
   const onDeleteTask = () => {
     deleteTask(task.id);
@@ -63,6 +92,11 @@ function TaskSideBar({ task, setSelectedTask }: TaskSideBarProps) {
         <div className="flex-1 flex flex-col h-full">
           <div>
             <h5 className="p-2 rounded-t-box">Assignees</h5>
+            <ChooseUserDropdown
+              current={task.assignedToId}
+              users={users ?? []}
+              updateUser={onUpdateAssignedUser}
+            />
           </div>
           <div className="divider my-2" />
           <div className="flex flex-col gap-2 p-2">

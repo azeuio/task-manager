@@ -49,10 +49,23 @@ export const deleteTask = (projectId: Project["id"], taskId: Task["id"]) =>
     method: "DELETE",
   });
 
-export const fetchAllTasksForUser = (userId: User["id"]) =>
-  fetchAuthenticated<Task[]>(`/api/v1/users/${userId}/tasks`, {
+export const fetchAllTasksForUser = (
+  userId: User["id"],
+  limit: number = 5,
+  offset: number = 0,
+) => {
+  const searchParams = new URLSearchParams();
+  if (limit !== undefined) {
+    searchParams.append("limit", limit.toString());
+  }
+  if (offset !== undefined) {
+    searchParams.append("offset", offset.toString());
+  }
+  const url = `/api/v1/users/${userId}/tasks?${searchParams.toString()}`;
+  return fetchAuthenticated<Task[]>(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   });
+};

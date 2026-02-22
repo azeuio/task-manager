@@ -8,7 +8,7 @@ interface RecentTasksCardProps {
   userId: number;
 }
 function RecentTasksCard({ userId }: RecentTasksCardProps) {
-  const { data: tasks } = useMyTasks(userId);
+  const { data: tasks } = useMyTasks(userId, 5);
   const [projects, setProjects] = React.useState<
     Record<Project["id"], Project>
   >({});

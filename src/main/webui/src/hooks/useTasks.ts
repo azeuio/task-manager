@@ -25,11 +25,17 @@ export const useTask = (projectId: Project["id"], taskId: Task["id"]) => {
   });
 };
 
-export const useMyTasks = (userId: User["id"]) => {
+export const useMyTasks = (
+  userId: User["id"],
+  limit?: number,
+  offset?: number,
+) => {
   return useQuery({
-    queryKey: [TASKS_QUERY_KEY, "my-tasks", userId],
+    queryKey: [TASKS_QUERY_KEY, "my-tasks", userId, limit, offset],
     queryFn: () =>
-      fetchAllTasksForUser(userId).then((response) => response.data),
+      fetchAllTasksForUser(userId, limit, offset).then(
+        (response) => response.data,
+      ),
     enabled: userId !== undefined && userId >= 0,
   });
 };

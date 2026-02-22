@@ -5,12 +5,26 @@ import { useUserByUsername } from "@/hooks/useUser";
 import { CircleCheck, FolderKanban, TriangleAlert } from "lucide-react";
 import { useMemo } from "react";
 
-function RisingIndicator({ value, prev }: { value: number; prev?: number }) {
+function RisingIndicator({
+  value,
+  prev,
+  bad,
+}: {
+  value: number;
+  prev?: number;
+  bad?: boolean;
+}) {
   const isPositive = value > 0;
   const isNegative = value < 0;
   return (
     <span
-      className={isPositive ? "text-success" : isNegative ? "text-error" : ""}
+      className={
+        (isPositive && !bad) || (bad && isNegative)
+          ? "text-success"
+          : (isNegative && !bad) || (bad && isPositive)
+            ? "text-error"
+            : ""
+      }
     >
       {isPositive ? "↗︎" : isNegative ? "↘︎" : "→"} {value}{" "}
       {prev !== undefined && <>({((value / (prev || 1)) * 100).toFixed(1)}%)</>}
@@ -45,6 +59,11 @@ function StatsHero({ username }: StatsHeroProps) {
       return (
         tasks?.reduce(
           ([thisMonth, lastMonth, total], task) => {
+            console.log("task", {
+              title: task.title,
+              status: task.status,
+              updatedAt: task.updatedAt,
+            });
             if (task.status !== 2) {
               return [thisMonth, lastMonth, total + 1];
             }
@@ -139,6 +158,7 @@ function StatsHero({ username }: StatsHeroProps) {
           <RisingIndicator
             value={overduThisMonth - overdueLastMonth}
             prev={overdueLastMonth}
+            bad
           />
         </div>
       </div>

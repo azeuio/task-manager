@@ -51,8 +51,8 @@ export const deleteTask = (projectId: Project["id"], taskId: Task["id"]) =>
 
 export const fetchAllTasksForUser = (
   userId: User["id"],
-  limit: number = 5,
-  offset: number = 0,
+  limit?: number,
+  offset?: number,
 ) => {
   const searchParams = new URLSearchParams();
   if (limit !== undefined) {

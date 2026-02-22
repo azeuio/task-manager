@@ -10,6 +10,7 @@ import org.acme.service.TaskMapperService;
 import org.acme.service.UserService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import io.quarkus.panache.common.Sort;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.inject.Inject;
@@ -42,7 +43,7 @@ public class TaskResource {
 
     @GET
     public List<TaskDTO> getTasks(@PathParam("projectId") Long projectId) {
-        List<Task> tasks = Task.list("project.id", projectId);
+        List<Task> tasks = Task.list("project.id", Sort.by("createdAt").descending(), projectId);
         return tasks.stream().map(taskMapper::toDTO).toList();
     }
 

@@ -105,6 +105,7 @@ public class UserResource {
         PanacheQuery<Task> query = Task.find("assignedTo.id = ?1",
                 Sort
                         .by("dueDate", Sort.NullPrecedence.NULLS_LAST).ascending()
+                        .and("status").ascending()
                         .and("createdAt").ascending(),
                 userid);
         if (limit == null && offset == null) {

@@ -351,7 +351,7 @@ function GraphView({ projectId }: GraphViewProps) {
         user.nodeSize *
         5 *
         (1 + Number(task.status === 2) * 1.1) *
-        (1 + Number(task.status === 0) * -0.5)
+        (1 + Number(task.status === 1) * -0.5)
       );
     }
     return 100;
@@ -388,7 +388,7 @@ function GraphView({ projectId }: GraphViewProps) {
       return (
         3 *
         (1 + Number(task.status === 2) * -0.5) *
-        (1 + Number(task.status === 0) * 1.25)
+        (1 + Number(task.status === 1) * 1.25)
       );
     }
     return 3;

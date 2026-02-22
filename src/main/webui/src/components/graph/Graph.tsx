@@ -57,20 +57,31 @@ function Graph({
   }, [containerRef]);
 
   return (
-    <ForceGraph
-      ref={fgRef}
-      width={size.width}
-      height={size.height}
-      graphData={data}
-      nodeLabel="id"
-      nodeAutoColorBy="id"
-      linkWidth={setLinkWidth}
-      linkColor={setLinkColor}
-      linkDirectionalArrowLength={1}
-      linkDirectionalArrowRelPos={1}
-      nodeCanvasObject={customRender}
-      nodeVal={setNodeSize}
-    />
+    <div className="relative">
+      <button
+        type="button"
+        className="btn btn-primary absolute top-2 right-2 z-10"
+        onClick={
+          () => fgRef.current?.zoomToFit(400, 100) /* duration, padding */
+        }
+      >
+        reset view
+      </button>
+      <ForceGraph
+        ref={fgRef}
+        width={size.width}
+        height={size.height}
+        graphData={data}
+        nodeLabel="id"
+        nodeAutoColorBy="id"
+        linkWidth={setLinkWidth}
+        linkColor={setLinkColor}
+        linkDirectionalArrowLength={1}
+        linkDirectionalArrowRelPos={1}
+        nodeCanvasObject={customRender}
+        nodeVal={setNodeSize}
+      />
+    </div>
   );
 }
 

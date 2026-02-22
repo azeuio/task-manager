@@ -5,6 +5,7 @@ import { useDeleteTask, useTask, useUpdateTask } from "@/hooks/useTasks";
 import ChooseStatusDropdown from "./ChooseStatusDropdown";
 import { useStatuses } from "@/hooks/useStatuses";
 import ChooseUserDropdown from "./ChooseUser";
+import TaskTitle from "./sidebar/TaskTitle";
 
 interface TaskSideBarProps {
   projectId: number;
@@ -81,9 +82,11 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
 
   return (
     <div className="menu bg-base-100 min-h-full w-1/2 p-4">
-      <h2 className="text-5xl mb-4">
-        {task?.title} #{task?.id}
-      </h2>
+      <TaskTitle
+        title={task?.title ?? "Unknown Task"}
+        id={task?.id ?? -1}
+        projectId={projectId}
+      />
       <div className="flex flex-row h-full grow">
         <TaskDescription
           projectId={projectId}

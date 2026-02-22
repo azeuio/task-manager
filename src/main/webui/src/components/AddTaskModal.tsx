@@ -2,6 +2,8 @@ import type { Project } from "@/api/types";
 import { useCreateTask } from "@/hooks/useTasks";
 import React from "react";
 import ChooseStatusDropdown from "./ChooseStatusDropdown";
+import ChooseUserDropdown from "./ChooseUser";
+import { useUserOfProject } from "@/hooks/useUser";
 
 interface AddTaskModalProps {
   projectId: Project["id"];
@@ -14,6 +16,10 @@ function AddTaskModal({
   statuses,
 }: AddTaskModalProps) {
   const { mutate: createTask } = useCreateTask(projectId);
+  const { data: users } = useUserOfProject(projectId);
+  const [selectedUserId, setSelectedUserId] = React.useState<
+    number | undefined
+  >(undefined);
 
   const onCreateTask = (event: React.SubmitEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
@@ -27,7 +33,17 @@ function AddTaskModal({
       title,
       description,
       status,
+      assignedToId: selectedUserId,
     });
+
+    // reset form fields after submission
+    event.currentTarget.reset();
+    setSelectedUserId(undefined);
+  };
+
+  const updateSelectedUserId = (event: React.MouseEvent<HTMLInputElement>) => {
+    const target = event.target as HTMLInputElement;
+    setSelectedUserId(parseInt(target.value, 10));
   };
 
   const updateStatusButton = (event: React.MouseEvent<HTMLInputElement>) => {
@@ -61,6 +77,11 @@ function AddTaskModal({
           statuses={statuses}
           statusesOrder={statusesOrder}
           updateStatusButton={updateStatusButton}
+        />
+        <ChooseUserDropdown
+          updateUser={updateSelectedUserId}
+          users={users ?? []}
+          current={selectedUserId}
         />
         <div className="modal-action">
           <button className="btn">Cancel</button>

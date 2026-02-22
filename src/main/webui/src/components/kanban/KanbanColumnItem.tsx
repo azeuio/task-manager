@@ -8,10 +8,14 @@ function KanbanColumnItem({ task, setSelectedTask }: KanbanColumnItemProps) {
   return (
     <label
       htmlFor="task-drawer-checkbox"
-      className="btn btn-soft justify-start hover:ring ring-primary drawer-button"
+      className="relative btn btn-soft justify-start hover:ring ring-primary drawer-button"
       onClick={() => setSelectedTask(task)}
     >
       {task.title}
+      <span
+        className="status status-error absolute top-0 right-0"
+        hidden={!(task.dueDate && new Date(task.dueDate) < new Date())}
+      />
     </label>
   );
 }

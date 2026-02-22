@@ -11,6 +11,10 @@ export interface NodeColor {
 export type GraphNodeType = {
   type: TaskNodeType;
   displayName?: string;
+  assignedToId?: number;
+  createdById?: number;
+  userId?: number;
+  index?: number;
 };
 
 export type GraphLinkObject = LinkObject<GraphNodeType>;

@@ -24,13 +24,16 @@ function useGraphData(
         ...users.map((user) => ({
           type: "user" as TaskNodeType,
           id: toUserId(user.username),
+          userId: user.id,
         })),
         ...(tasks?.map((task) => ({
           type: "task" as TaskNodeType,
           id: toTaskId(task.id),
+          assignedToId: task.assignedToId,
+          createdById: task.createdById,
           status: task.status,
         })) ?? []),
-        ...statuses.map((status: unknown, index: number) => ({
+        ...statuses.map((status: string, index: number) => ({
           type: "status" as TaskNodeType,
           id: toStatusId(index),
           displayName: status,
@@ -314,8 +317,9 @@ function GraphView({ projectId }: GraphViewProps) {
   };
 
   const setNodeSize = (node: NodeObject) => {
-    const [type] = getLabel(node);
-    return (maxNodeSize[type] ?? 50) * 2;
+    // const [type] = getLabel(node);
+    // return (maxNodeSize[type] ?? 50) * 2;
+    return node.nodeSize ?? 50;
   };
 
   const setLinkColor = (link: GraphLinkObject) => {
@@ -394,6 +398,27 @@ function GraphView({ projectId }: GraphViewProps) {
     return 3;
   };
 
+  const setLineDash = (link: GraphLinkObject) => {
+    const source = link.source!;
+    const target = link.target!;
+    if (typeof source !== "object" || typeof target !== "object") {
+      return [];
+    }
+    const types = [source.type, target.type].sort().join("-");
+    if (types === "status-task") {
+      return [4, 2];
+    }
+    if (types === "task-user") {
+      const task = source.type === "task" ? source : target;
+      const user = source.type === "user" ? source : target;
+      if (task.assignedToId === user.userId) {
+        return [];
+      }
+      return [6, 3];
+    }
+    return [];
+  };
+
   return (
     <div ref={containerRef} className="size-full">
       <Graph
@@ -405,6 +430,7 @@ function GraphView({ projectId }: GraphViewProps) {
         setLinkDistance={setLinkLength}
         setLinkStrength={setLinkStrength}
         setLinkWidth={setLinkWidth}
+        setLineDash={setLineDash}
       />
     </div>
   );

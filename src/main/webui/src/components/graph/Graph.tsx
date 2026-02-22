@@ -21,6 +21,7 @@ interface GraphProps {
   setLinkDistance: (link: GraphLinkObject) => number;
   setLinkStrength?: (link: GraphLinkObject) => number;
   setLinkWidth?: (link: GraphLinkObject) => number;
+  setLineDash?: (link: GraphLinkObject) => number[];
 }
 
 function Graph({
@@ -32,6 +33,7 @@ function Graph({
   setLinkDistance,
   setLinkStrength,
   setLinkWidth,
+  setLineDash,
 }: GraphProps) {
   const fgRef =
     useRef<ForceGraphMethods<GraphNodeType, GraphLinkObject>>(undefined);
@@ -80,6 +82,7 @@ function Graph({
         linkDirectionalArrowRelPos={1}
         nodeCanvasObject={customRender}
         nodeVal={setNodeSize}
+        linkLineDash={setLineDash}
       />
     </div>
   );

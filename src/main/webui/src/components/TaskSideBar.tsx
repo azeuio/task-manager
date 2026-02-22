@@ -80,6 +80,26 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
     }
   };
 
+  const onUpdateDueDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!task) return;
+    const newDueDate = e.target.value
+      ? new Date(e.target.value).toISOString()
+      : null;
+    updateTask(
+      {
+        taskId: task.id,
+        updatedTask: {
+          dueDate: newDueDate ?? undefined,
+        },
+      },
+      {
+        onSuccess: (response) => {
+          setSelectedTask(response.data);
+        },
+      },
+    );
+  };
+
   return (
     <div className="menu bg-base-100 min-h-full w-1/2 p-4">
       <TaskTitle
@@ -111,6 +131,19 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
               statuses={statuses}
               statusesOrder={statusesOrder}
               updateStatusButton={onUpdateStatus}
+            />
+          </div>
+          <div className="divider divider-end" />
+          <div className="relative flex flex-col gap-2 p-2">
+            <h5 className="rounded-t-box">Due date</h5>
+            <span className="absolute badge badge-error right-0 top-0">
+              overdue
+            </span>
+            <input
+              type="date"
+              className="input input-bordered w-full"
+              value={task?.dueDate ? task.dueDate.split("T")[0] : ""}
+              onChange={onUpdateDueDate}
             />
           </div>
           <div className="divider divider-end" />

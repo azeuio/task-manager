@@ -96,8 +96,8 @@ function SideBar() {
           tabIndex={-1}
           className="dropdown-content menu w-52 rounded-box bg-base-100 border border-base-content/25 shadow-sm"
         >
-          <li className="btn btn-ghost">Profile</li>
-          <li className="btn btn-ghost">Settings</li>
+          {/* <li className="btn btn-ghost">Profile</li>
+          <li className="btn btn-ghost">Settings</li> */}
           <li className="btn btn-ghost" onClick={handleLogout}>
             Logout
           </li>

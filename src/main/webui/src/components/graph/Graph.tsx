@@ -38,12 +38,21 @@ function Graph({
   const fgRef =
     useRef<ForceGraphMethods<GraphNodeType, GraphLinkObject>>(undefined);
   const [size, setSize] = useState<ContainerSize>({ width: 0, height: 0 });
+  const [actualData, setActualData] = useState(data);
+
+  const resetView = () => {
+    fgRef.current?.zoomToFit(400);
+    setActualData((prevData) => {
+      // Force re-render by creating a new object reference
+      return { nodes: [...prevData.nodes], links: [...prevData.links] };
+    });
+  };
 
   useEffect(() => {
     fgRef.current?.d3Force("link")?.distance(setLinkDistance);
     fgRef.current?.d3Force("link")?.strength(setLinkStrength);
-    fgRef.current?.d3Force("center")?.strength(0.1);
-  }, [setLinkDistance, setLinkStrength]);
+    fgRef.current?.d3Force("center")?.strength(0.5);
+  }, [setLinkDistance, setLinkStrength, data]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,9 +72,9 @@ function Graph({
       <button
         type="button"
         className="btn btn-primary absolute top-2 right-2 z-10"
-        onClick={
-          () => fgRef.current?.zoomToFit(400, 100) /* duration, padding */
-        }
+        onClick={() => {
+          resetView();
+        }}
       >
         reset view
       </button>
@@ -73,7 +82,7 @@ function Graph({
         ref={fgRef}
         width={size.width}
         height={size.height}
-        graphData={data}
+        graphData={actualData}
         nodeLabel="id"
         nodeAutoColorBy="id"
         linkWidth={setLinkWidth}

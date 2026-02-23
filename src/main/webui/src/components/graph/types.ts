@@ -13,6 +13,7 @@ export type GraphNodeType = {
   displayName?: string;
   assignedToId?: number;
   createdById?: number;
+  username?: string;
   userId?: number;
   index?: number;
 };

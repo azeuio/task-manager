@@ -1,12 +1,13 @@
 import { useMemo, useRef, useState } from "react";
 import Graph from "./graph/Graph";
 import type { NodeObject } from "react-force-graph-2d";
-import { useUserOfProject } from "@/hooks/useUser";
+import { useKeycloakUser, useUserOfProject } from "@/hooks/useUser";
 import { useTasks } from "@/hooks/useTasks";
 import { useProject } from "@/hooks/useProjects";
 import type {
   GraphLinkObject,
   GraphNodeData,
+  GraphNodeType,
   NodeColor,
   TaskNodeType,
 } from "./graph/types";
@@ -24,6 +25,7 @@ function useGraphData(
         ...users.map((user) => ({
           type: "user" as TaskNodeType,
           id: toUserId(user.username),
+          username: user.username,
           userId: user.id,
         })),
         ...(tasks?.map((task) => ({
@@ -70,9 +72,11 @@ interface GraphViewProps {
   projectId: number;
 }
 function GraphView({ projectId }: GraphViewProps) {
+  const loggedInUser = useKeycloakUser();
   const { data: users } = useUserOfProject(projectId);
   const { data: tasks } = useTasks(projectId);
   const { data: project } = useProject(projectId);
+  const [savedGlobalScale, setSavedGlobalScale] = useState(1);
   const statuses = useMemo(() => {
     return ["To Do", "In Progress", "Done", ...(project?.customStatuses ?? [])];
   }, [project?.customStatuses]);
@@ -160,8 +164,19 @@ function GraphView({ projectId }: GraphViewProps) {
     label: string,
     globalScale: number,
   ) => {
+    const changedScale =
+      Math.round(globalScale * 1) / 1 != Math.round(savedGlobalScale * 1) / 1;
+    const Mns = {
+      user: changedScale ? 0 : maxNodeSize.user,
+      task: changedScale ? 0 : maxNodeSize.task,
+      status: changedScale ? 0 : maxNodeSize.status,
+      unknown: changedScale ? 0 : maxNodeSize.unknown,
+    };
+    if (changedScale) {
+      setSavedGlobalScale(globalScale);
+    }
     const [type, displayLabel] = getLabel({ id: label });
-    const fontSize = 12 / globalScale;
+    const fontSize = 14 / globalScale;
     ctx.font = `${fontSize}px Sans-Serif`;
     const textWidth = displayLabel.split("\n").reduce((max, line) => {
       const lineWidth = ctx.measureText(line).width;
@@ -170,7 +185,7 @@ function GraphView({ projectId }: GraphViewProps) {
     const textHeight = fontSize * label.split("\n").length; // Approximate text height based on number of lines
     const padding = 4 / globalScale;
     const size = Math.max(textWidth, textHeight) / 2 + padding;
-    const maxSize = Math.max(maxNodeSize[type] ?? 0, size);
+    const maxSize = Math.max(Mns[type] ?? 0, size);
     setMaxNodeSize((prev) => ({ ...prev, [type]: maxSize }));
     return [maxSize, fontSize];
   };
@@ -295,12 +310,18 @@ function GraphView({ projectId }: GraphViewProps) {
       case "user": {
         // node.fy = 2 * nodeSize;
         // Draw circle background
+        const user: GraphNodeType = node as GraphNodeType;
         ctx.beginPath();
         ctx.arc(nodePos.x, nodePos.y, nodeSize, 0, 2 * Math.PI);
         ctx.fillStyle = color.background;
         ctx.fill();
-        ctx.lineWidth = 1 / globalScale;
-        ctx.strokeStyle = color.border;
+        if (user.username === loggedInUser?.username) {
+          ctx.lineWidth = 3 / globalScale;
+          ctx.strokeStyle = rootStyle.getPropertyValue("--color-accent");
+        } else {
+          ctx.lineWidth = 1 / globalScale;
+          ctx.strokeStyle = color.border;
+        }
         ctx.stroke();
 
         // Draw label

@@ -58,9 +58,10 @@ export const useUserByUsername = (username: User["username"]) => {
 
 export const useUserOfProject = (projectId: number) => {
   return useQuery({
-    queryKey: ["project-members", projectId],
+    queryKey: ["user-of-project", projectId],
     queryFn: async () => {
       return fetchUserOfProject(projectId).then((response) => response.data);
     },
+    enabled: projectId !== undefined && projectId >= 0,
   });
 };

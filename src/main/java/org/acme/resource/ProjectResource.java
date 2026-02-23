@@ -137,7 +137,13 @@ public class ProjectResource {
     @Path("/{projectId}/members")
     public List<ProjectMemberDTO> getProjectMembers(@PathParam("projectId") Long projectId) {
         List<ProjectMember> projectMembers = ProjectMember.findByProjectId(projectId);
-        return projectMembers.stream().map(projectMemberMapper::toDTO).toList();
+        List<ProjectMemberDTO> projectMemberDTOs = projectMembers.stream().map(projectMemberMapper::toDTO).toList();
+
+        // print project members for debugging
+        System.out.println("Project members for project " + projectId + ":");
+        projectMemberDTOs.forEach(pm -> System.out.println("- " + pm.userId() + " (" + pm.role() + ")"));
+
+        return projectMemberDTOs;
     }
 
     @GET
@@ -157,7 +163,7 @@ public class ProjectResource {
     public ProjectMemberDTO addProjectMember(@PathParam("projectId") Long projectId,
             ProjectMemberDTO projectMemberDTO) {
         Project project = Project.findById(projectId);
-        User user = userService.findUser(projectMemberDTO.username());
+        User user = User.findById(projectMemberDTO.userId());
         if (project == null || user == null) {
             throw new RuntimeException("Project or User not found");
         }

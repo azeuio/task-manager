@@ -1,11 +1,11 @@
-import type { Project, User } from "@/api/types";
-import { fetchUser, fetchUserProfilePicture } from "@/api/user";
+import type { Project } from "@/api/types";
 import { useAlert } from "@/hooks/useAlert";
 import {
   useCreateProjectMember,
   useProjectMembers,
 } from "@/hooks/useProjectMembers";
 import { useEffect, useState } from "react";
+import ProjectMemberPP from "./ProjectMemberPP";
 
 interface ProjectAssigneesProps {
   projectId: Project["id"];
@@ -15,26 +15,41 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
   const { data: members } = useProjectMembers(projectId);
   const { mutate: createProjectMember, isError: isCreateError } =
     useCreateProjectMember(projectId);
-  const [projectMembers, setProjectMembers] = useState<User[]>([]);
+  // const [projectMembers, setProjectMembers] = useState<User[]>([]);
   const [isErrorHandled, setIsErrorHandled] = useState(false);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      if (members) {
-        try {
-          const memberData = await Promise.all(
-            members.map((member) => fetchUser(member.userId)),
-          );
-          const users = memberData.map((res) => res.data);
-          setProjectMembers(users);
-        } catch (error) {
-          console.error("Error fetching project members:", error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchMembers = async () => {
+  //     if (members) {
+  //       try {
+  //         const memberData = await Promise.allSettled(
+  //           members.map((member) =>
+  //             member.userId
+  //               ? fetchUser(member.userId)
+  //               : Promise.reject(
+  //                   new Error("Invalid member data: missing userId"),
+  //                 ),
+  //           ),
+  //         );
+  //         const users = memberData
+  //           .map((res) => {
+  //             if (res.status === "fulfilled") {
+  //               return res.value.data;
+  //             } else {
+  //               console.error("Error fetching member data:", res.reason);
+  //               return null;
+  //             }
+  //           })
+  //           .filter((user): user is User => user !== null);
+  //         setProjectMembers(users);
+  //       } catch (error) {
+  //         console.error("Error fetching project members:", error);
+  //       }
+  //     }
+  //   };
 
-    fetchMembers();
-  }, [members]);
+  //   fetchMembers();
+  // }, [members]);
 
   useEffect(() => {
     if (!isCreateError) return;
@@ -71,43 +86,31 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
     <details id="project-members-dropdown" className="dropdown dropdown-end">
       <summary className="btn btn-ghost rounded-full">
         {/* Where you can see people that have access to this project */}
-        {(projectMembers?.length ?? 0) > 0 && (
+        {(members?.length ?? 0) > 0 && (
           <div className="flex -space-x-2">
-            {projectMembers?.map((member, index) => {
+            {members?.map((member, index) => {
               if (index >= 2) return null; // Show max 3 avatars, add a "+X" for the rest if needed
               return (
-                <img
-                  key={index}
-                  src={fetchUserProfilePicture(member.username)}
-                  alt={`${member.username}'s avatar`}
-                  className="rounded-full border-2 border-white"
-                />
+                <ProjectMemberPP key={member.id} userId={member.userId} big />
               );
             })}
-            {(projectMembers?.length ?? 0) > 3 && (
+            {(members?.length ?? 0) > 3 && (
               <div
                 className="rounded-full border-2 border-white bg-gray-400 text-white text-xs flex items-center justify-center"
                 style={{ width: 32, height: 32 }}
               >
-                +{(projectMembers?.length ?? 0) - 3}
+                +{(members?.length ?? 0) - 3}
               </div>
             )}
           </div>
         )}
       </summary>
       <div className="dropdown-content menu p-2 shadow bg-base-100 border border-base-content/20 rounded-box w-52">
-        {projectMembers?.length === 0 ? (
+        {members?.length === 0 ? (
           <div className="p-2">No members have access to this project.</div>
         ) : (
-          projectMembers?.map((member) => (
-            <div key={member.id} className="flex items-center gap-2 p-2">
-              <img
-                src={fetchUserProfilePicture(member.username)}
-                alt={`${member.username}'s avatar`}
-                className="rounded-full w-6 h-6"
-              />
-              <span>{member.username}</span>
-            </div>
+          members?.map((member) => (
+            <ProjectMemberPP key={member.id} userId={member.userId} />
           ))
         )}
         <form onSubmit={onAddMember} className="flex flex-col gap-2 p-2">

@@ -51,7 +51,6 @@ echo "Starting the application..."
 docker compose up -d
 waiting_for_db
 waiting_for_keycloak
-echo "Keycloak is ready!"
 echo "Running the application in development mode..."
 ./mvnw quarkus:dev && \
 echo "Cleaning up..." && \

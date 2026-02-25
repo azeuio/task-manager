@@ -37,4 +37,13 @@ public class ProjectService {
                 .map(user -> (User) user)
                 .collect(Collectors.toSet());
     }
+
+    public Set<Project> getProjectsByUserId(Long userId) {
+        return Project.find(
+                "SELECT DISTINCT p FROM Project p JOIN ProjectMember pm ON pm.project.id = p.id WHERE pm.user.id = :userId",
+                Parameters.with("userId", userId))
+                .stream()
+                .map(project -> (Project) project)
+                .collect(Collectors.toSet());
+    }
 }

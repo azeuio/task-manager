@@ -33,6 +33,19 @@ interface Project {
   statusesOrder?: number[]; // Optional order of statuses, if not provided, default order is To Do, In Progress, Done
 }
 
+interface ProjectStats {
+  projectId: Project["id"];
+  projectName: string;
+  from: string; // ISO date string
+  to: string; // ISO date string
+  totalTasks: number;
+  tasksCreated: number;
+  completedTasks: number;
+  overdueTasks: number;
+  totalMembers: number;
+  membersJoined: number;
+}
+
 interface User {
   id: number;
   username: string;
@@ -55,6 +68,7 @@ export type {
   Task,
   TaskCreateRequest,
   Project,
+  ProjectStats,
   User,
   ProjectMember,
 };

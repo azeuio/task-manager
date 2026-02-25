@@ -1,12 +1,19 @@
 import React from "react";
 import keycloak from "../keycloak";
 import StatsCard from "../components/StatsCard";
-import { CircleAlert, FolderKanban, TriangleAlert } from "lucide-react";
+import {
+  ChartNoAxesColumn,
+  CircleAlert,
+  FolderKanban,
+  TriangleAlert,
+} from "lucide-react";
 import YourProjectsCard from "@/components/YourProjectsCard";
 import { useProjects } from "@/hooks/useProjects";
 import StatsHero from "@/components/dashboard/StatsHero";
 import RecentTasksCard from "@/components/dashboard/RecentTasksCard";
 import { useUserByUsername } from "@/hooks/useUser";
+import ProjectsStats from "@/components/ProjectStats";
+import { AnimatePresence, motion } from "framer-motion";
 
 function Dashboard() {
   const [keycloakUser, setUser] =
@@ -26,9 +33,27 @@ function Dashboard() {
         setUser(null);
       });
   }, []);
+  const [c, setC] = React.useState(0);
 
   return (
     <div className="flex flex-col gap-8">
+      <AnimatePresence>
+        {c % 2 === 0 && (
+          <motion.div
+            className="absolute size-full top-0 left-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <ProjectsStats key={c % 2} toggle={() => setC((c) => c + 1)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <button
+        className="absolute top-4 right-4 btn btn-ghost"
+        onClick={() => setC((c) => c + 1)}
+      >
+        <ChartNoAxesColumn />
+      </button>
       <div className="flex flex-col gap-2 border-b border-base-content/25 pb-4">
         <h1 className="font-bold text-3xl">
           Welcome back, {keycloakUser?.firstName ?? "user"}

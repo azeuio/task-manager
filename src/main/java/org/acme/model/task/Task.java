@@ -166,4 +166,12 @@ public class Task extends PanacheEntity {
                 return "unknown";
         }
     }
+
+    public boolean isCompleted() {
+        return status == 2;
+    }
+
+    public boolean isOverdue() {
+        return dueDate != null && dueDate.isBefore(Instant.now()) && !isCompleted();
+    }
 }

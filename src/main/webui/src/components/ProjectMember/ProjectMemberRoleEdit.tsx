@@ -26,7 +26,7 @@ function ProjectMemberRoleEdit({
   return (
     <>
       <div
-        className="tooltip tooltip-left tooltip-info"
+        className="tooltip tooltip-left tooltip-info has-disabled:cursor-not-allowed"
         data-tip={member.role
           .toLowerCase()
           .replace(/^\w/, (c) => c.toUpperCase())}

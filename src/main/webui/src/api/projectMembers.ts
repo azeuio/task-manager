@@ -44,14 +44,18 @@ export const addProjectMember = (
     data: { projectId, username, role },
   });
 
-export const removeProjectMember = (projectId: number, username: string) =>
-  fetchAuthenticated(`/api/v1/projects/${projectId}/members`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
+export const removeProjectMember = (projectId: number, userId: number) => {
+  console.log(`Removing user ${userId} from project ${projectId}`);
+  return fetchAuthenticated(
+    `/api/v1/projects/${projectId}/members/user/${userId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-    data: { username },
-  });
+  );
+};
 
 export const updateProjectMember = (
   projectId: number,

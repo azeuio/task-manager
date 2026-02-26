@@ -102,11 +102,11 @@ public class ProjectMemberResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/user/{userId}")
     @Transactional
-    public void removeProjectMember(@PathParam("projectId") Long projectId, @PathParam("id") Long id) {
-        ProjectMember projectMember = ProjectMember.findById(id);
-        if (projectMember == null || !projectMember.getProject().id.equals(projectId)) {
+    public void removeProjectMember(@PathParam("projectId") Long projectId, @PathParam("userId") Long userId) {
+        ProjectMember projectMember = ProjectMember.findByProjectIdAndUserId(projectId, userId);
+        if (projectMember == null) {
             throw new RuntimeException("Project member not found");
         }
         projectMember.delete();

@@ -43,10 +43,8 @@ export const useCreateProjectMember = (projectId: number) => {
 
 export const useRemoveProjectMember = (projectId: number) => {
   return useMutation({
-    mutationFn: (username: string) =>
-      removeProjectMember(projectId, username).then(
-        (response) => response.data,
-      ),
+    mutationFn: (userid: number) =>
+      removeProjectMember(projectId, userid).then((response) => response.data),
     onSettled: (_data, _error, _variables, _onMutateResult, context) => {
       // Invalidate and refetch
       context.client.invalidateQueries({

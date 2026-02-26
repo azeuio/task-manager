@@ -11,7 +11,7 @@ export const fetchProjectMembers = (projectId: number) =>
 
 export const fetchProjectMember = (projectId: number, username: string) =>
   fetchAuthenticated<ProjectMember>(
-    `/api/v1/projects/${projectId}/members/${username}`,
+    `/api/v1/projects/${projectId}/members/user/${username}`,
     {
       method: "GET",
       headers: {
@@ -52,3 +52,19 @@ export const removeProjectMember = (projectId: number, username: string) =>
     },
     data: { username },
   });
+
+export const updateProjectMember = (
+  projectId: number,
+  userId: User["id"],
+  updatedFields: Partial<Omit<ProjectMember, "projectId" | "userId">>,
+) =>
+  fetchAuthenticated<ProjectMember>(
+    `/api/v1/projects/${projectId}/members/user/${userId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: updatedFields,
+    },
+  );

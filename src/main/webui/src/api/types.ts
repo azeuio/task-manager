@@ -55,11 +55,18 @@ interface User {
   createdAt: string;
 }
 
+const MemberRole = {
+  OWNER: "OWNER",
+  CONTRIBUTOR: "CONTRIBUTOR",
+  VIEWER: "VIEWER",
+} as const;
+
+type MemberRole = (typeof MemberRole)[keyof typeof MemberRole];
 interface ProjectMember {
   id: number;
   projectId: Project["id"];
   userId: User["id"];
-  role: "OWNER" | "CONTRIBUTOR" | "VIEWER";
+  role: MemberRole;
   joinedAt: string;
 }
 
@@ -72,3 +79,5 @@ export type {
   User,
   ProjectMember,
 };
+
+export { MemberRole };

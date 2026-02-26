@@ -13,18 +13,18 @@ function ProjectMemberPP({
   if (!user) {
     return (
       <div
-        className={`w-8 h-8 rounded-full bg-gray-300 animate-pulse ${big ? "w-12 h-12" : ""}`}
+        className={`w-8 h-8 rounded-full bg-gray-300 animate-pulse ${big ? "w-6 h-6" : ""}`}
       />
     );
   }
 
   const username = user.username;
   return (
-    <div className="flex items-center gap-2 p-2">
+    <div className="flex items-center">
       <img
         src={fetchUserProfilePicture(username)}
         alt={`${username}'s avatar`}
-        className={`rounded-full`}
+        className={`rounded-full border-2 border-white ${big ? "w-8 h-8" : "w-8 h-8"}`}
       />
       <span hidden={big}>{username}</span>
     </div>

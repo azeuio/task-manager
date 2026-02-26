@@ -18,39 +18,6 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
   // const [projectMembers, setProjectMembers] = useState<User[]>([]);
   const [isErrorHandled, setIsErrorHandled] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchMembers = async () => {
-  //     if (members) {
-  //       try {
-  //         const memberData = await Promise.allSettled(
-  //           members.map((member) =>
-  //             member.userId
-  //               ? fetchUser(member.userId)
-  //               : Promise.reject(
-  //                   new Error("Invalid member data: missing userId"),
-  //                 ),
-  //           ),
-  //         );
-  //         const users = memberData
-  //           .map((res) => {
-  //             if (res.status === "fulfilled") {
-  //               return res.value.data;
-  //             } else {
-  //               console.error("Error fetching member data:", res.reason);
-  //               return null;
-  //             }
-  //           })
-  //           .filter((user): user is User => user !== null);
-  //         setProjectMembers(users);
-  //       } catch (error) {
-  //         console.error("Error fetching project members:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchMembers();
-  // }, [members]);
-
   useEffect(() => {
     if (!isCreateError) return;
     if (isErrorHandled) return;
@@ -84,7 +51,7 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
 
   return (
     <details id="project-members-dropdown" className="dropdown dropdown-end">
-      <summary className="btn btn-ghost rounded-full">
+      <summary className="btn btn-ghost">
         {/* Where you can see people that have access to this project */}
         {(members?.length ?? 0) > 0 && (
           <div className="flex -space-x-2">

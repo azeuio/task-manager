@@ -43,21 +43,21 @@ function SideBar() {
         <input
           type="radio"
           name="theme-buttons"
-          className="btn theme-controller join-item"
+          className="btn btn-ghost theme-controller join-item"
           aria-label="Default"
           value="default"
         />
         <input
           type="radio"
           name="theme-buttons"
-          className="btn theme-controller join-item"
+          className="btn btn-ghost theme-controller join-item"
           aria-label="Light"
           value="autumn"
         />
         <input
           type="radio"
           name="theme-buttons"
-          className="btn theme-controller join-item"
+          className="btn btn-ghost theme-controller join-item"
           aria-label="Dark"
           value="abyss"
         />
@@ -96,8 +96,6 @@ function SideBar() {
           tabIndex={-1}
           className="dropdown-content menu w-52 rounded-box bg-base-100 border border-base-content/25 shadow-sm"
         >
-          {/* <li className="btn btn-ghost">Profile</li>
-          <li className="btn btn-ghost">Settings</li> */}
           <li className="btn btn-ghost" onClick={handleLogout}>
             Logout
           </li>

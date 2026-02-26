@@ -5,6 +5,7 @@ import GraphView from "../components/GraphView";
 import SidebarLayout from "@/layouts/SidebarLayout";
 import ProjectPageHeader from "@/components/ProjectPageHeader";
 import { useProject } from "@/hooks/useProjects";
+import { AnimatePresence, motion } from "framer-motion";
 
 function ProjectPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -14,6 +15,10 @@ function ProjectPage() {
     isError,
   } = useProject(parseInt(projectId!, 10));
   const [view, setView] = React.useState<"kanban" | "graph">("kanban");
+
+  React.useEffect(() => {
+    setView("kanban");
+  }, [projectId]);
 
   if (isLoading) {
     return <SidebarLayout />;
@@ -41,10 +46,22 @@ function ProjectPage() {
     >
       <div className="flex flex-col gap-4 h-full max-h-full">
         <div className="overflow-x-auto h-full">
-          {view === "kanban" && <KanbanView project={project} />}
-          {view === "graph" && (
-            <GraphView projectId={parseInt(projectId!, 10)} />
-          )}
+          <AnimatePresence>
+            {view === "kanban" && (
+              <motion.div
+                key="kanban"
+                initial={{ x: "-100%", position: "absolute" }}
+                animate={{ x: 0, position: "relative" }}
+                exit={{ x: "-100%", position: "absolute" }}
+                transition={{ duration: 0.2 }}
+              >
+                <KanbanView project={project} />
+              </motion.div>
+            )}
+            {view === "graph" && (
+              <GraphView projectId={parseInt(projectId!, 10)} />
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </SidebarLayout>

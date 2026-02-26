@@ -6,7 +6,7 @@ import ProjectMembers from "./ProjectMembers";
 interface ProjectPageHeaderProps {
   project: Project;
   view: "kanban" | "graph";
-  setView: React.Dispatch<React.SetStateAction<"kanban" | "graph">>;
+  setView: (view: "kanban" | "graph") => void;
 }
 function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
   const { mutate: updateProject } = useUpdateProject();
@@ -89,35 +89,23 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
         </form>
       </div>
       <div className="flex flex-row items-center">
-        <div className="flex flex-row gap-2 mr-4 bg-base-300 rounded-md p-1">
+        <div className="tabs tabs-box">
           <input
-            id="kanban"
-            name="view"
             type="radio"
-            className="peer/kanban sr-only"
+            name="view-tabs"
+            className="tab"
+            aria-label="Kanban"
             onChange={() => setView("kanban")}
             checked={view === "kanban"}
           />
-          <label
-            htmlFor="kanban"
-            className="peer-checked/kanban:bg-base-100 peer-checked/kanban:shadow peer-checked/kanban:shadow-base-200 rounded-md px-3 py-1 cursor-pointer"
-          >
-            Kanban
-          </label>
           <input
-            id="graph"
-            name="view"
             type="radio"
-            className="peer/graph sr-only"
+            name="view-tabs"
+            className="tab"
+            aria-label="Graph"
             onChange={() => setView("graph")}
             checked={view === "graph"}
           />
-          <label
-            htmlFor="graph"
-            className="peer-checked/graph:bg-base-100 peer-checked/graph:shadow peer-checked/graph:shadow-base-200 rounded-md px-3 py-1 cursor-pointer"
-          >
-            Graph
-          </label>
         </div>
 
         <ProjectMembers projectId={project.id} />

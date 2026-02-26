@@ -21,7 +21,7 @@ function SideBar() {
   };
 
   return (
-    <div className="bg-base-100 flex min-h-screen flex-col divide-y divide-base-content/25 border-r border-base-content/25">
+    <div className="z-10 bg-base-100 flex min-h-screen flex-col divide-y divide-base-content/25 border-r border-base-content/25">
       <div className="flex flex-row items-center p-4 h-24">
         <div className="m-2 flex size-12 items-center justify-center rounded-xl bg-neutral">
           {/* Logo Section */}

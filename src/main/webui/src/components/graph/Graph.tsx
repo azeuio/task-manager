@@ -71,7 +71,7 @@ function Graph({
     <div className="relative">
       <button
         type="button"
-        className="btn btn-primary absolute top-2 right-2 z-10"
+        className="btn btn-primary absolute bottom-2 right-2 z-10"
         onClick={() => {
           resetView();
         }}

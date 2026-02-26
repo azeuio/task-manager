@@ -1,11 +1,13 @@
-import type { Project } from "@/api/types";
+import { type Project } from "@/api/types";
 import { useAlert } from "@/hooks/useAlert";
 import {
   useCreateProjectMember,
+  useProjectMember,
   useProjectMembers,
 } from "@/hooks/useProjectMembers";
 import { useEffect, useState } from "react";
 import ProjectMemberPP from "./ProjectMemberPP";
+import ProjectMemberItem from "./ProjectMember/ProjectMemberItem";
 
 interface ProjectAssigneesProps {
   projectId: Project["id"];
@@ -13,6 +15,7 @@ interface ProjectAssigneesProps {
 function ProjectMembers({ projectId }: ProjectAssigneesProps) {
   const { showAlert } = useAlert();
   const { data: members } = useProjectMembers(projectId);
+  const { data: projectMembersOfUser } = useProjectMember(projectId, "me");
   const { mutate: createProjectMember, isError: isCreateError } =
     useCreateProjectMember(projectId);
   // const [projectMembers, setProjectMembers] = useState<User[]>([]);
@@ -77,7 +80,11 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
           <div className="p-2">No members have access to this project.</div>
         ) : (
           members?.map((member) => (
-            <ProjectMemberPP key={member.id} userId={member.userId} />
+            <ProjectMemberItem
+              key={member.id}
+              member={member}
+              projectMembersOfUser={projectMembersOfUser}
+            />
           ))
         )}
         <form onSubmit={onAddMember} className="flex flex-col gap-2 p-2">

@@ -1,16 +1,18 @@
 let global_counter=0
-function waiting_for_db() {
-  echo -n "Waiting for the database to be ready"
-  let timeout=120
+function waiting_for() {
+  local service_name=$1
+  local success_message=$2
+  local timeout=$3
+  echo -n "Waiting for ${service_name} to be ready"
   let counter=0
-  until docker inspect -f '{{.State.Health.Status}}' quarkus-postgres | grep "healthy" > /dev/null 2>&1; do
+  until docker inspect -f '{{.State.Health.Status}}' ${service_name} | grep "healthy" > /dev/null 2>&1; do
     if [ $(($counter % 3)) -eq 0 ]; then
       echo -ne "\033[1K\r"
-      echo -n "Waiting for the database to be ready"
+      echo -n "Waiting for ${service_name} to be ready"
     fi
     if [ $counter -ge $timeout ]; then
       echo -ne "\033[1K\r"
-      echo "Database is not ready after 2 minutes. Exiting."
+      echo "${service_name} is not ready after ${timeout} seconds. Exiting."
       docker compose down
       exit 1
     fi
@@ -20,37 +22,13 @@ function waiting_for_db() {
   done
   echo -ne "\033[1K\r"
   let global_counter=global_counter+counter
-  echo "[${global_counter}s] Database is ready!"
-}
-
-function waiting_for_keycloak() {
-  echo -n "Waiting for the keycloak to be ready"
-  let timeout=120
-  let counter=0
-  until docker inspect -f '{{.State.Health.Status}}' keycloak | grep "healthy" > /dev/null 2>&1; do
-    if [ $(($counter % 3)) -eq 0 ]; then
-      echo -ne "\033[1K\r"
-      echo -n "Waiting for the keycloak to be ready"
-    fi
-    if [ $counter -ge $timeout ]; then
-      echo -ne "\033[1K\r"
-      echo "Keycloak is not ready after 2 minutes. Exiting."
-      docker compose down
-      exit 1
-    fi
-    echo -n "."
-    sleep 1
-    let counter=counter+1
-  done
-  echo -ne "\033[1K\r"
-  let global_counter=global_counter+counter
-  echo "[${global_counter}s] Keycloak is ready!"
+  echo "[${global_counter}s] ${success_message}"
 }
 
 echo "Starting the application..."
 docker compose up -d
-waiting_for_db
-waiting_for_keycloak
+waiting_for quarkus-postgres "Database is ready!" 120
+waiting_for keycloak "Keycloak is ready!" 120
 echo "Running the application in development mode..."
 ./mvnw quarkus:dev && \
 echo "Cleaning up..." && \

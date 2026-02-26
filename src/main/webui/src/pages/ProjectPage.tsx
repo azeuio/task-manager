@@ -85,7 +85,7 @@ function ProjectPage() {
           id="task-drawer-checkbox"
           type="checkbox"
           className="drawer-toggle"
-          checked={selectedTask !== null}
+          defaultChecked={selectedTask !== null}
         />
         <AnimatePresence>
           <div className="drawer-side">

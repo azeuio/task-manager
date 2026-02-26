@@ -86,7 +86,7 @@ public class ProjectMemberResource {
     public ProjectMemberDTO addProjectMember(@PathParam("projectId") Long projectId,
             ProjectMemberDTO projectMemberDTO) {
         Project project = Project.findById(projectId);
-        User user = User.findById(projectMemberDTO.userId());
+        User user = userService.findUser(projectMemberDTO.username());
         if (project == null || user == null) {
             throw new RuntimeException("Project or User not found");
         }

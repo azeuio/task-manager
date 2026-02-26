@@ -27,7 +27,7 @@ function SideBar() {
           {/* Logo Section */}
           <ClipboardList className="size-full p-2 stroke-neutral-content" />
         </div>
-        <div className="text-lg font-bold">Task Manager</div>
+        <div className="text-lg font-bold text-nowrap">Task Manager</div>
       </div>
       <div className="grow px-2 py-2">
         <Link

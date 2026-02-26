@@ -136,7 +136,10 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
           <div className="divider divider-end" />
           <div className="relative flex flex-col gap-2 p-2">
             <h5 className="rounded-t-box">Due date</h5>
-            <span className="absolute badge badge-error right-0 top-0">
+            <span
+              className="absolute badge badge-error right-0 top-0"
+              hidden={!(task?.dueDate && new Date(task.dueDate) < new Date())}
+            >
               overdue
             </span>
             <input

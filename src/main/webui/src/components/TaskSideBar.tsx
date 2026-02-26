@@ -6,13 +6,13 @@ import ChooseStatusDropdown from "./ChooseStatusDropdown";
 import { useStatuses } from "@/hooks/useStatuses";
 import ChooseUserDropdown from "./ChooseUser";
 import TaskTitle from "./sidebar/TaskTitle";
+import { motion } from "framer-motion";
 
 interface TaskSideBarProps {
   projectId: number;
   taskId: Task["id"];
-  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
 }
-function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
+function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
   const { data: task } = useTask(projectId, taskId);
   const { data: taskCreator } = useUser(task?.createdById);
   const { statuses, statusesOrder } = useStatuses(projectId);
@@ -35,19 +35,12 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
     const userIdValue = target.value;
     const userId = parseInt(userIdValue, 10);
     if (!isNaN(userId)) {
-      updateTask(
-        {
-          taskId: task.id,
-          updatedTask: {
-            assignedToId: userId,
-          },
+      updateTask({
+        taskId: task.id,
+        updatedTask: {
+          assignedToId: userId,
         },
-        {
-          onSuccess: (response) => {
-            setSelectedTask(response.data);
-          },
-        },
-      );
+      });
     }
   };
 
@@ -63,20 +56,12 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
     const statusValue = target.value;
     const statusIndex = statusesOrder.indexOf(parseInt(statusValue, 10));
     if (statusIndex !== -1) {
-      updateTask(
-        {
-          taskId: task.id,
-          updatedTask: {
-            status: statusesOrder[statusIndex],
-          },
+      updateTask({
+        taskId: task.id,
+        updatedTask: {
+          status: statusesOrder[statusIndex],
         },
-        {
-          onSuccess: (response) => {
-            console.log("Task updated successfully:", response);
-            setSelectedTask(response.data);
-          },
-        },
-      );
+      });
     }
   };
 
@@ -85,23 +70,22 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
     const newDueDate = e.target.value
       ? new Date(e.target.value).toISOString()
       : null;
-    updateTask(
-      {
-        taskId: task.id,
-        updatedTask: {
-          dueDate: newDueDate ?? undefined,
-        },
+    updateTask({
+      taskId: task.id,
+      updatedTask: {
+        dueDate: newDueDate ?? undefined,
       },
-      {
-        onSuccess: (response) => {
-          setSelectedTask(response.data);
-        },
-      },
-    );
+    });
   };
 
   return (
-    <div className="menu bg-base-100 min-h-full w-1/2 p-4">
+    <motion.div
+      className="menu bg-base-100 min-h-full w-1/2 p-4"
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ duration: 0.2 }}
+    >
       <TaskTitle
         title={task?.title ?? "Unknown Task"}
         id={task?.id ?? -1}
@@ -160,7 +144,7 @@ function TaskSideBar({ projectId, taskId, setSelectedTask }: TaskSideBarProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

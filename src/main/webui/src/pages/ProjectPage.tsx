@@ -1,13 +1,29 @@
 import React from "react";
-import { Navigate, useParams } from "react-router";
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import KanbanView from "../components/KanbanView";
 import GraphView from "../components/GraphView";
 import SidebarLayout from "@/layouts/SidebarLayout";
 import ProjectPageHeader from "@/components/ProjectPageHeader";
 import { useProject } from "@/hooks/useProjects";
 import { AnimatePresence, motion } from "framer-motion";
+import type { Task } from "@/api/types";
+import TaskSideBar from "@/components/TaskSideBar";
 
 function ProjectPage() {
+  const navigate = useNavigate();
+  const searchParams = useSearchParams();
+  const selectedTask = React.useMemo(() => {
+    const taskIdParam = searchParams[0].get("task");
+    if (!taskIdParam) return null;
+    const taskId = parseInt(taskIdParam, 10);
+    if (isNaN(taskId)) return null;
+    return { id: taskId } as Task;
+  }, [searchParams]);
   const { projectId } = useParams<{ projectId: string }>();
   const {
     data: project,
@@ -44,25 +60,48 @@ function ProjectPage() {
         )
       }
     >
-      <div className="flex flex-col gap-4 h-full max-h-full">
-        <div className="overflow-x-auto h-full">
-          <AnimatePresence>
-            {view === "kanban" && (
-              <motion.div
-                key="kanban"
-                initial={{ x: "-100%", position: "absolute" }}
-                animate={{ x: 0, position: "relative" }}
-                exit={{ x: "-100%", position: "absolute" }}
-                transition={{ duration: 0.2 }}
-              >
-                <KanbanView project={project} />
-              </motion.div>
-            )}
+      <div className="drawer drawer-end size-full">
+        <div className="flex flex-col gap-4 h-full max-h-full">
+          <div className="overflow-x-auto h-full">
+            <AnimatePresence>
+              {view === "kanban" && (
+                <motion.div
+                  key="kanban"
+                  initial={{ x: "-100%", position: "absolute" }}
+                  animate={{ x: 0, position: "relative" }}
+                  exit={{ x: "-100%", position: "absolute" }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <KanbanView project={project} />
+                </motion.div>
+              )}
+            </AnimatePresence>
             {view === "graph" && (
               <GraphView projectId={parseInt(projectId!, 10)} />
             )}
-          </AnimatePresence>
+          </div>
         </div>
+        <input
+          id="task-drawer-checkbox"
+          type="checkbox"
+          className="drawer-toggle"
+          checked={selectedTask !== null}
+        />
+        <AnimatePresence>
+          <div className="drawer-side">
+            <label
+              htmlFor="task-drawer-checkbox"
+              aria-label="close sidebar"
+              className="drawer-overlay"
+              onClick={() => {
+                navigate(window.location.pathname);
+              }}
+            ></label>
+            {selectedTask && (
+              <TaskSideBar projectId={project.id} taskId={selectedTask.id} />
+            )}
+          </div>
+        </AnimatePresence>
       </div>
     </SidebarLayout>
   );

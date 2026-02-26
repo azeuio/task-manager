@@ -1,15 +1,18 @@
 import type { Task } from "@api/types";
+import { useNavigate } from "react-router";
 
 interface KanbanColumnItemProps {
   task: Task;
-  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
 }
-function KanbanColumnItem({ task, setSelectedTask }: KanbanColumnItemProps) {
+function KanbanColumnItem({ task }: KanbanColumnItemProps) {
+  const navigate = useNavigate();
   return (
     <label
       htmlFor="task-drawer-checkbox"
       className="relative btn btn-soft justify-start hover:ring ring-primary drawer-button"
-      onClick={() => setSelectedTask(task)}
+      onClick={() => {
+        navigate(`?task=${task.id}`, { replace: true });
+      }}
     >
       {task.title}
       <span

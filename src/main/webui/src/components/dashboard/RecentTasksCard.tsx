@@ -3,11 +3,13 @@ import Card from "@components/Card";
 import { useMyTasks } from "@/hooks/useTasks";
 import type { Project } from "@/api/types";
 import { fetchProject } from "@/api/project";
+import { useNavigate } from "react-router";
 
 interface RecentTasksCardProps {
   userId: number;
 }
 function RecentTasksCard({ userId }: RecentTasksCardProps) {
+  const navigate = useNavigate();
   const { data: tasks } = useMyTasks(userId, 5);
   const [projects, setProjects] = React.useState<
     Record<Project["id"], Project>
@@ -37,7 +39,13 @@ function RecentTasksCard({ userId }: RecentTasksCardProps) {
       <div className="w-full bg-base-content/25 h-0.5 mb-4" />
       <ul className="flex flex-col gap-2">
         {tasks?.map((task) => (
-          <li key={task.id} className="flex flex-row justify-between">
+          <button
+            key={task.id}
+            className="flex flex-row justify-between text-left hover:bg-base-200 p-1 cursor-pointer"
+            onClick={() => {
+              navigate(`/projects/${task.projectId}?task=${task.id}`);
+            }}
+          >
             <div>
               <div className="font-semibold">{task.title}</div>
               <div className="text-sm text-gray-500">
@@ -71,7 +79,7 @@ function RecentTasksCard({ userId }: RecentTasksCardProps) {
                 </span>
               )}
             </div>
-          </li>
+          </button>
         ))}
       </ul>
     </Card>

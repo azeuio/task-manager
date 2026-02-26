@@ -19,6 +19,7 @@ function Dashboard() {
   const [keycloakUser, setUser] =
     React.useState<Keycloak.KeycloakProfile | null>(null);
   const { data: user } = useUserByUsername(keycloakUser?.username ?? "");
+  const [c, setC] = React.useState(0);
 
   const { data: projects } = useProjects();
 
@@ -33,12 +34,11 @@ function Dashboard() {
         setUser(null);
       });
   }, []);
-  const [c, setC] = React.useState(0);
 
   return (
     <div className="flex flex-col gap-8">
       <AnimatePresence>
-        {c % 2 === 0 && (
+        {c % 2 === 1 && (
           <motion.div
             className="absolute size-full top-0 left-0"
             initial={{ opacity: 0 }}

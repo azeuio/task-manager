@@ -36,51 +36,43 @@ function RecentTasksCard({ userId }: RecentTasksCardProps) {
     <Card title={<div className="font-bold text-lg">Recent tasks</div>}>
       <div className="w-full bg-base-content/25 h-0.5 mb-4" />
       <ul className="flex flex-col gap-2">
-        {tasks
-          ?.sort((a, b) => {
-            if (a.status === 2 && b.status !== 2) return 1;
-            if (a.status !== 2 && b.status === 2) return -1;
-            return (
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-            );
-          })
-          .map((task) => (
-            <li key={task.id} className="flex flex-row justify-between">
-              <div>
-                <div className="font-semibold">{task.title}</div>
-                <div className="text-sm text-gray-500">
-                  {projects[task.projectId]?.name || "Unknown project"}{" "}
-                  {task.dueDate
-                    ? " - " + new Date(task.dueDate).toLocaleDateString()
-                    : ""}{" "}
-                </div>
+        {tasks?.map((task) => (
+          <li key={task.id} className="flex flex-row justify-between">
+            <div>
+              <div className="font-semibold">{task.title}</div>
+              <div className="text-sm text-gray-500">
+                {projects[task.projectId]?.name || "Unknown project"}{" "}
+                {task.dueDate
+                  ? " - " + new Date(task.dueDate).toLocaleDateString()
+                  : ""}{" "}
               </div>
-              <div className="text-sm flex items-center gap-2">
-                {task.status < 2 &&
-                  task.dueDate &&
-                  new Date(task.dueDate) < new Date() && (
-                    <span className="rounded-full border border-error py-1 px-2 text-error">
-                      Overdue
-                    </span>
-                  )}
-                {task.status === 0 && (
-                  <span className="rounded-full border border-neutral-content bg-neutral py-1 px-2 text-neutral-content">
-                    To do
+            </div>
+            <div className="text-sm flex items-center gap-2">
+              {task.status < 2 &&
+                task.dueDate &&
+                new Date(task.dueDate) < new Date() && (
+                  <span className="rounded-full border border-error py-1 px-2 text-error">
+                    Overdue
                   </span>
                 )}
-                {task.status === 1 && (
-                  <span className="rounded-full border border-accent-content bg-accent py-1 px-2 text-accent-content">
-                    In progress
-                  </span>
-                )}
-                {task.status === 2 && (
-                  <span className="rounded-full border border-success-content bg-success py-1 px-2 text-success-content">
-                    Done
-                  </span>
-                )}
-              </div>
-            </li>
-          ))}
+              {task.status === 0 && (
+                <span className="rounded-full border border-neutral-content bg-neutral py-1 px-2 text-neutral-content">
+                  To do
+                </span>
+              )}
+              {task.status === 1 && (
+                <span className="rounded-full border border-accent-content bg-accent py-1 px-2 text-accent-content">
+                  In progress
+                </span>
+              )}
+              {task.status === 2 && (
+                <span className="rounded-full border border-success-content bg-success py-1 px-2 text-success-content">
+                  Done
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
       </ul>
     </Card>
   );

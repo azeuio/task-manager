@@ -6,7 +6,6 @@ import java.util.Set;
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectDTO;
 import org.acme.model.project_member.ProjectMember;
-import org.acme.model.project_member.ProjectMemberDTO;
 import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
 import org.acme.model.user.UserDTO;
@@ -126,66 +125,4 @@ public class ProjectResource {
                 .collect(java.util.stream.Collectors.toSet());
     }
 
-    @GET
-    @Path("/members")
-    public List<ProjectMemberDTO> getProjectMembers() {
-        List<ProjectMember> projectMembers = ProjectMember.listAll();
-        return projectMembers.stream().map(projectMemberMapper::toDTO).toList();
-    }
-
-    @GET
-    @Path("/{projectId}/members")
-    public List<ProjectMemberDTO> getProjectMembers(@PathParam("projectId") Long projectId) {
-        List<ProjectMember> projectMembers = ProjectMember.findByProjectId(projectId);
-        List<ProjectMemberDTO> projectMemberDTOs = projectMembers.stream().map(projectMemberMapper::toDTO).toList();
-
-        // print project members for debugging
-        System.out.println("Project members for project " + projectId + ":");
-        projectMemberDTOs.forEach(pm -> System.out.println("- " + pm.userId() + " (" + pm.role() + ")"));
-
-        return projectMemberDTOs;
-    }
-
-    @GET
-    @Path("/{projectId}/members/user/{userId}")
-    public ProjectMemberDTO getProjectMembersByUserId(@PathParam("userId") Long userId,
-            @PathParam("projectId") Long projectId) {
-        ProjectMember projectMember = ProjectMember.findByProjectIdAndUserId(projectId, userId);
-        if (projectMember == null) {
-            throw new RuntimeException("Project member not found");
-        }
-        return projectMemberMapper.toDTO(projectMember);
-    }
-
-    @POST
-    @Path("/{projectId}/members")
-    @Transactional
-    public ProjectMemberDTO addProjectMember(@PathParam("projectId") Long projectId,
-            ProjectMemberDTO projectMemberDTO) {
-        Project project = Project.findById(projectId);
-        User user = User.findById(projectMemberDTO.userId());
-        if (project == null || user == null) {
-            throw new RuntimeException("Project or User not found");
-        }
-        System.out.println("Adding user " + user.getUsername() + " to project " + project.getName() + " with role "
-                + projectMemberDTO.role());
-        ProjectMember projectMember = projectMemberMapper.toEntity(projectMemberDTO);
-        projectMember.setProject(project);
-        projectMember.setUser(user);
-        projectMember.persist();
-        project.addMember(projectMember);
-        project.persist();
-        return projectMemberMapper.toDTO(projectMember);
-    }
-
-    @DELETE
-    @Path("/{projectId}/members/{id}")
-    @Transactional
-    public void removeProjectMember(@PathParam("projectId") Long projectId, @PathParam("id") Long id) {
-        ProjectMember projectMember = ProjectMember.findById(id);
-        if (projectMember == null || !projectMember.getProject().id.equals(projectId)) {
-            throw new RuntimeException("Project member not found");
-        }
-        projectMember.delete();
-    }
 }

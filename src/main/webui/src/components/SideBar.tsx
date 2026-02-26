@@ -4,12 +4,17 @@ import { Link } from "react-router";
 import Projectlist from "./sidebar/Projectlist";
 import { useKeycloakUser } from "@/hooks/useUser";
 import { fetchUserProfilePicture } from "@/api/user";
+import { useState } from "react";
 
 function SideBar() {
   const user = useKeycloakUser();
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("theme") || "default";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    return savedTheme;
+  });
 
   const handleLogout = () => {
-    // Implement logout logic here, e.g., clear tokens, redirect to login page, etc.
     keycloak
       .logout()
       .then(() => {
@@ -20,8 +25,15 @@ function SideBar() {
       });
   };
 
+  const onThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTheme = e.target.value;
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+    setTheme(newTheme);
+  };
+
   return (
-    <div className="z-10 bg-base-100 flex min-h-screen flex-col divide-y divide-base-content/25 border-r border-base-content/25">
+    <div className="z-10 bg-base-100 flex overflow-clip h-screen flex-col divide-y divide-base-content/25 border-r border-base-content/25">
       <div className="flex flex-row items-center p-4 h-24">
         <div className="m-2 flex size-12 items-center justify-center rounded-xl bg-neutral">
           {/* Logo Section */}
@@ -29,7 +41,7 @@ function SideBar() {
         </div>
         <div className="text-lg font-bold text-nowrap">Task Manager</div>
       </div>
-      <div className="grow px-2 py-2">
+      <div className="grow px-2 py-2 overflow-y-hidden">
         <Link
           to="/dashboard"
           className="flex cursor-pointer flex-row items-center rounded-md px-4 py-2 hover:bg-base-300"
@@ -46,6 +58,8 @@ function SideBar() {
           className="btn btn-ghost theme-controller join-item"
           aria-label="Default"
           value="default"
+          onChange={onThemeChange}
+          checked={theme === "default"}
         />
         <input
           type="radio"
@@ -53,6 +67,8 @@ function SideBar() {
           className="btn btn-ghost theme-controller join-item"
           aria-label="Light"
           value="autumn"
+          onChange={onThemeChange}
+          checked={theme === "autumn"}
         />
         <input
           type="radio"
@@ -60,6 +76,8 @@ function SideBar() {
           className="btn btn-ghost theme-controller join-item"
           aria-label="Dark"
           value="abyss"
+          onChange={onThemeChange}
+          checked={theme === "abyss"}
         />
       </div>
       <div className="relative px-2">

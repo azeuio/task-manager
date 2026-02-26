@@ -22,9 +22,9 @@ function Projectlist() {
   }, [isProjectCreated, createdProject, navigate]);
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       <ProjectListHeader createProject={createProject} />
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-1 overflow-y-auto">
         {isLoading && (
           <div className="flex flex-row items-center gap-2 px-4 py-2">
             <div
@@ -49,8 +49,19 @@ function Projectlist() {
             project={{ id: Infinity, ...pendingProject }}
           />
         )}
+        <div className="invisible">
+          {" "}
+          {/* Spacer */}
+          <ProjectListItem
+            project={{
+              id: Infinity,
+              name: "",
+              color: "",
+            }}
+          />
+        </div>
       </ul>
-    </>
+    </div>
   );
 }
 

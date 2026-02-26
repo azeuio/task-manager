@@ -12,7 +12,7 @@ function Container({ children }: { children: React.ReactNode }) {
 }
 
 function YourProjectsCard() {
-  const { data: projects, isLoading, error } = useProjects();
+  const { data: projects, isLoading, error } = useProjects(4);
 
   if (isLoading) {
     return (

@@ -31,7 +31,7 @@ function ProjectItem({ project }: ProjectItemProps) {
         className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-base-200"
       >
         <div
-          className="rounded-lg size-12 inline-block"
+          className="rounded-lg size-12 inline-block border border-base-content/25"
           style={{ backgroundColor: project.color }}
         />
         <div className="flex flex-col">

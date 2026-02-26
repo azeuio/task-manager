@@ -1,13 +1,21 @@
 import { fetchAuthenticated } from "./fetchAuthenticated";
 import type { Project } from "./types";
 
-export const fetchAllProjects = () =>
-  fetchAuthenticated<Project[]>("/api/v1/projects", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+export const fetchAllProjects = (limit?: number) => {
+  const searchParams = new URLSearchParams();
+  if (limit !== undefined) {
+    searchParams.append("limit", limit.toString());
+  }
+  return fetchAuthenticated<Project[]>(
+    "/api/v1/projects?" + searchParams.toString(),
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
+};
 
 export const fetchProject = (projectId: Project["id"]) =>
   fetchAuthenticated<Project>(`/api/v1/projects/${projectId}`, {

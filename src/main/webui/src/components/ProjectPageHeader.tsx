@@ -73,7 +73,7 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
           type="color"
           value={project?.color ?? ""}
           onChange={onColorChange}
-          className="rounded-lg size-12 inline-block border-none bg-transparent text-sm cursor-pointer"
+          className="size-12 inline-block bg-transparent text-sm cursor-pointer"
         />
         <form className="group flex flex-col" onSubmit={onNameChange}>
           <input

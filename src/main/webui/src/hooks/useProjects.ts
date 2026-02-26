@@ -10,10 +10,10 @@ import {
 
 const PROJECTS_QUERY_KEY = "projects";
 
-export const useProjects = () => {
+export const useProjects = (limit?: number) => {
   return useQuery({
-    queryKey: [PROJECTS_QUERY_KEY],
-    queryFn: () => fetchAllProjects().then((response) => response.data),
+    queryKey: [PROJECTS_QUERY_KEY, "list", limit ?? "all"],
+    queryFn: () => fetchAllProjects(limit).then((response) => response.data),
   });
 };
 

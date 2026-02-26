@@ -27,6 +27,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/api/v1/projects")
@@ -56,11 +57,13 @@ public class ProjectResource {
 
     @GET
     @Transactional // because of lazy loading of members
-    public List<ProjectDTO> getProjects() {
+    public List<ProjectDTO> getProjects(@QueryParam("limit") Integer limit) {
+        System.out.println("Fetching projects with limit: " + limit);
         User currentUser = userService.findUser(securityIdentity.getPrincipal().getName());
         List<ProjectMember> projects = projectService.findByMemberUserId(currentUser.id);
         List<ProjectDTO> projectDTOs = projects.stream()
                 .map(pm -> projectMapper.toDTO(pm.getProject()))
+                .limit(limit != null ? limit : Long.MAX_VALUE)
                 .toList();
         return projectDTOs;
 

@@ -1,14 +1,25 @@
 import { useCreateProject, useProjects } from "@hooks/useProjects";
 import ProjectListHeader from "./ProjectListHeader";
 import ProjectListItem from "./ProjectListItem";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 function Projectlist() {
+  const navigate = useNavigate();
   const { data: projects, isLoading } = useProjects();
   const {
     mutate: createProject,
     variables: pendingProject,
     isPending: isCreatingProject,
+    data: createdProject,
+    isSuccess: isProjectCreated,
   } = useCreateProject();
+
+  useEffect(() => {
+    if (isProjectCreated && createdProject) {
+      navigate(`/projects/${createdProject.id}`);
+    }
+  }, [isProjectCreated, createdProject, navigate]);
 
   return (
     <>

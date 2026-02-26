@@ -1,7 +1,8 @@
-import { useUpdateProject } from "@/hooks/useProjects";
+import { useDeleteProject, useUpdateProject } from "@/hooks/useProjects";
 import type { Project } from "@api/types";
 import React from "react";
 import ProjectMembers from "./ProjectMembers";
+import { Ellipsis } from "lucide-react";
 
 interface ProjectPageHeaderProps {
   project: Project;
@@ -10,6 +11,7 @@ interface ProjectPageHeaderProps {
 }
 function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
   const { mutate: updateProject } = useUpdateProject();
+  const { mutate: deleteProject } = useDeleteProject();
 
   React.useEffect(() => {
     if (!project) return;
@@ -54,6 +56,12 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
     focusedElement.blur();
   };
 
+  const onDeleteProject = () => {
+    if (project) {
+      deleteProject(project.id);
+    }
+  };
+
   return (
     <div className="flex flex-row justify-between items-center">
       <div className="flex items-center gap-2">
@@ -88,7 +96,7 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
           </div>
         </form>
       </div>
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center gap-2">
         <div className="tabs tabs-box">
           <input
             type="radio"
@@ -109,6 +117,34 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
         </div>
 
         <ProjectMembers projectId={project.id} />
+        <button
+          className="btn btn-ghost"
+          popoverTarget="popover-extra-actions"
+          style={
+            { anchorName: "--anchor-extra-actions" } as React.CSSProperties
+          }
+        >
+          <Ellipsis className="stroke-base-content fill-base-content" />
+        </button>
+        <ul
+          className="dropdown menu w-52 rounded-box bg-base-100 shadow-sm"
+          popover="auto"
+          id="popover-extra-actions"
+          style={
+            {
+              positionAnchor: "--anchor-extra-actions",
+            } /* as React.CSSProperties */
+          }
+        >
+          <li>
+            <button
+              className="btn btn-error btn-outline"
+              onClick={onDeleteProject}
+            >
+              Delete Project
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   );

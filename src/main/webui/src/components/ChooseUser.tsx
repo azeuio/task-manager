@@ -5,11 +5,13 @@ interface ChooseUserDropdownProps {
   current?: number;
   users: User[];
   updateUser: (event: React.MouseEvent<HTMLInputElement>) => void;
+  readonly?: boolean;
 }
 function ChooseUserDropdown({
   current,
   users,
   updateUser,
+  readonly,
 }: ChooseUserDropdownProps) {
   const ulRef = useRef<HTMLUListElement>(null);
 
@@ -37,10 +39,17 @@ function ChooseUserDropdown({
 
   return (
     <div className="dropdown dropdown-top">
-      <div tabIndex={0} id="user-dropdown" role="button" className="btn m-1">
+      <button
+        tabIndex={0}
+        id="user-dropdown"
+        role="button"
+        className="btn m-1"
+        disabled={readonly}
+      >
         {current !== undefined ? getUserName(current) : "Unknown"}
-      </div>
+      </button>
       <ul
+        hidden={readonly}
         ref={ulRef}
         tabIndex={-1}
         className="dropdown-content dropdown-top menu ring ring-accent bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
@@ -58,6 +67,7 @@ function ChooseUserDropdown({
                   updateUser(event);
                   loseFocus(event);
                 }}
+                disabled={readonly}
               />{" "}
               {user.displayName}
             </label>

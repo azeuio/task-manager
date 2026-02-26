@@ -6,8 +6,9 @@ interface TaskTitleProps {
   projectId: number;
   title: string;
   id: number;
+  readonly?: boolean;
 }
-function TaskTitle({ projectId, title, id }: TaskTitleProps) {
+function TaskTitle({ projectId, title, id, readonly }: TaskTitleProps) {
   const [isEditing, setIsEditing] = useState(false);
   const { mutate: updateTask } = useUpdateTask(projectId);
   const ref = useRef<HTMLInputElement>(null);
@@ -37,6 +38,7 @@ function TaskTitle({ projectId, title, id }: TaskTitleProps) {
         className="cursor-pointer"
         onClick={() => setIsEditing(!isEditing)}
         type="button"
+        hidden={readonly}
       >
         <PencilLine
           className={"text-base-content" + (isEditing ? " hidden" : "")}

@@ -87,7 +87,11 @@ function ProjectMembers({ projectId }: ProjectAssigneesProps) {
             />
           ))
         )}
-        <form onSubmit={onAddMember} className="flex flex-col gap-2 p-2">
+        <form
+          onSubmit={onAddMember}
+          className="flex flex-col gap-2 p-2"
+          hidden={projectMembersOfUser?.role === "VIEWER"}
+        >
           <input
             name="username"
             type="text"

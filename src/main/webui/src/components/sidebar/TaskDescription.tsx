@@ -7,12 +7,14 @@ interface TaskDescriptionProps {
   taskId: number;
   description: string;
   username: string;
+  readonly?: boolean;
 }
 function TaskDescription({
   projectId,
   taskId,
   description,
   username,
+  readonly,
 }: TaskDescriptionProps) {
   const { mutate: updateTask } = useUpdateTask(projectId);
   const [isEditing, setIsEditing] = useState(false);
@@ -63,6 +65,7 @@ function TaskDescription({
             setIsEditing((prev) => !prev);
           }}
           type="button"
+          hidden={readonly}
         >
           <PencilLine className="text-primary" size={16} />
         </button>

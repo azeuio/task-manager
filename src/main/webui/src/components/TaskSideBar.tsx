@@ -11,8 +11,9 @@ import { motion } from "framer-motion";
 interface TaskSideBarProps {
   projectId: number;
   taskId: Task["id"];
+  readonly?: boolean;
 }
-function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
+function TaskSideBar({ projectId, taskId, readonly }: TaskSideBarProps) {
   const { data: task } = useTask(projectId, taskId);
   const { data: taskCreator } = useUser(task?.createdById);
   const { statuses, statusesOrder } = useStatuses(projectId);
@@ -90,6 +91,7 @@ function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
         title={task?.title ?? "Unknown Task"}
         id={task?.id ?? -1}
         projectId={projectId}
+        readonly={readonly}
       />
       <div className="flex flex-row h-full grow">
         <TaskDescription
@@ -97,6 +99,7 @@ function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
           taskId={task?.id ?? -1}
           description={task?.description ?? "No description provided."}
           username={taskCreator?.displayName ?? "Unknown User"}
+          readonly={readonly}
         />
         <div className="flex-1 flex flex-col h-full">
           <div>
@@ -105,6 +108,7 @@ function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
               current={task?.assignedToId}
               users={users ?? []}
               updateUser={onUpdateAssignedUser}
+              readonly={readonly}
             />
           </div>
           <div className="divider my-2" />
@@ -115,6 +119,7 @@ function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
               statuses={statuses}
               statusesOrder={statusesOrder}
               updateStatusButton={onUpdateStatus}
+              readonly={readonly}
             />
           </div>
           <div className="divider divider-end" />
@@ -131,13 +136,15 @@ function TaskSideBar({ projectId, taskId }: TaskSideBarProps) {
               className="input input-bordered w-full"
               value={task?.dueDate ? task.dueDate.split("T")[0] : ""}
               onChange={onUpdateDueDate}
+              disabled={readonly}
             />
           </div>
           <div className="divider divider-end" />
-          <div className="flex flex-col gap-2 p-2">
+          <div className="flex flex-col gap-2 p-2 has-disabled:cursor-not-allowed">
             <button
               className="btn btn-error btn-outline"
               onClick={onDeleteTask}
+              disabled={readonly}
             >
               Delete Task
             </button>

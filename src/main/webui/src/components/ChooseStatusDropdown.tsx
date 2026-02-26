@@ -5,12 +5,14 @@ interface ChooseStatusDropdownProps {
   statuses: string[];
   statusesOrder: number[];
   updateStatusButton: (event: React.MouseEvent<HTMLInputElement>) => void;
+  readonly?: boolean;
 }
 function ChooseStatusDropdown({
   currentStatus,
   statuses,
   statusesOrder,
   updateStatusButton,
+  readonly,
 }: ChooseStatusDropdownProps) {
   const ulRef = useRef<HTMLUListElement>(null);
 
@@ -33,12 +35,19 @@ function ChooseStatusDropdown({
 
   return (
     <div className="dropdown dropdown-top">
-      <div tabIndex={0} id="status-dropdown" role="button" className="btn m-1">
+      <button
+        tabIndex={0}
+        id="status-dropdown"
+        role="button"
+        className="btn m-1"
+        disabled={readonly}
+      >
         {currentStatus !== undefined
           ? statuses[statusesOrder.indexOf(currentStatus)]
           : "Unknown"}
-      </div>
+      </button>
       <ul
+        hidden={readonly}
         ref={ulRef}
         tabIndex={-1}
         className="dropdown-content dropdown-top menu ring ring-accent bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
@@ -56,6 +65,7 @@ function ChooseStatusDropdown({
                   updateStatusButton(event);
                   loseFocus(event);
                 }}
+                disabled={readonly}
               />{" "}
               {statuses[index]}
             </label>

@@ -3,6 +3,7 @@ import type { Project } from "@api/types";
 import React from "react";
 import ProjectMembers from "./ProjectMembers";
 import { Ellipsis } from "lucide-react";
+import { useProjectMember } from "@/hooks/useProjectMembers";
 
 interface ProjectPageHeaderProps {
   project: Project;
@@ -10,6 +11,7 @@ interface ProjectPageHeaderProps {
   setView: (view: "kanban" | "graph") => void;
 }
 function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
+  const { data: projectMembership } = useProjectMember(project.id, "me");
   const { mutate: updateProject } = useUpdateProject();
   const { mutate: deleteProject } = useDeleteProject();
 
@@ -140,6 +142,9 @@ function ProjectPageHeader({ project, view, setView }: ProjectPageHeaderProps) {
             <button
               className="btn btn-error btn-outline"
               onClick={onDeleteProject}
+              disabled={
+                !projectMembership || projectMembership.role !== "OWNER"
+              }
             >
               Delete Project
             </button>

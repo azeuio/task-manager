@@ -5,8 +5,9 @@ interface KanbanColumnProps {
   status: Task["status"];
   title: string;
   tasks: Task[];
+  readonly?: boolean;
 }
-function KanbanColumn({ status, title, tasks }: KanbanColumnProps) {
+function KanbanColumn({ status, title, tasks, readonly }: KanbanColumnProps) {
   const showModal = () => {
     const modal = document.getElementById(`add-task-modal`);
     const statusSelect = document.querySelector(
@@ -31,9 +32,11 @@ function KanbanColumn({ status, title, tasks }: KanbanColumnProps) {
         {tasks.map((task) => (
           <KanbanColumnItem key={task.id} task={task} />
         ))}
-        <button className="btn btn-dash btn-sm mt-2" onClick={showModal}>
-          + Add Task
-        </button>
+        {readonly || (
+          <button className="btn btn-dash btn-sm mt-2" onClick={showModal}>
+            + Add Task
+          </button>
+        )}
       </div>
     </div>
   );

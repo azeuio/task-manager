@@ -13,6 +13,7 @@ import { useProject } from "@/hooks/useProjects";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Task } from "@/api/types";
 import TaskSideBar from "@/components/TaskSideBar";
+import { useProjectMember } from "@/hooks/useProjectMembers";
 
 function ProjectPage() {
   const navigate = useNavigate();
@@ -25,6 +26,10 @@ function ProjectPage() {
     return { id: taskId } as Task;
   }, [searchParams]);
   const { projectId } = useParams<{ projectId: string }>();
+  const { data: projectMembership } = useProjectMember(
+    projectId ? parseInt(projectId, 10) : -1,
+    "me",
+  );
   const {
     data: project,
     isLoading,
@@ -98,7 +103,13 @@ function ProjectPage() {
               }}
             ></label>
             {selectedTask && (
-              <TaskSideBar projectId={project.id} taskId={selectedTask.id} />
+              <TaskSideBar
+                projectId={project.id}
+                taskId={selectedTask.id}
+                readonly={
+                  !projectMembership || projectMembership.role === "VIEWER"
+                }
+              />
             )}
           </div>
         </AnimatePresence>

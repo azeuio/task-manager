@@ -2,6 +2,8 @@ package org.acme.service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.acme.model.project.Project;
@@ -15,8 +17,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ProjectsStatsService {
     public ProjectsStatsDTO toDTO(Long projectId, Long monthDelta) {
         Project project = Project.findById(projectId);
-        Instant from = Instant.now().minus(Duration.ofDays((monthDelta + 1) * 30));
-        Instant to = Instant.now().minus(Duration.ofDays(monthDelta * 30));
+        Instant now = Instant.now();
+        ZonedDateTime nowZoned = now.atZone(ZoneId.systemDefault()).withDayOfMonth(1);
+        int yearDelta = nowZoned.minus(Duration.ofDays(monthDelta * 30)).getYear() - nowZoned.getYear();
+        int year = nowZoned.getYear() + yearDelta;
+        int month = nowZoned.minus(Duration.ofDays(monthDelta * 30)).getMonthValue();
+        Instant from = nowZoned.withYear(year).withMonth(month).withDayOfMonth(1).toInstant();
+        Instant to = from.plus(Duration.ofDays(35)).atZone(ZoneId.systemDefault()).withDayOfMonth(1)
+                .minus(Duration.ofDays(1)).toInstant();
+
         // Total members in the project at the given monthDelta
         Long totalMembers = ProjectMember.find("project.id", projectId).stream()
                 .map(pm -> (ProjectMember) pm)
@@ -35,14 +44,31 @@ public class ProjectsStatsService {
                 .toList();
         // Total tasks created in the given monthDelta
         Long tasksCreated = tasks.stream()
-                .filter(task -> (task.getCreatedAt().isAfter(from)))
+                .filter(task -> (task.getCreatedAt().isAfter(from)) && (task.getCreatedAt().isBefore(to)))
+                .count();
+        // Total tasks completed in the given monthDelta
+        Long tasksCompleted = tasks.stream()
+                .filter(Task::isCompleted)
+                .filter(task -> task.isCompleted() && task.getStatusChangedAt().isAfter(from)
+                        && task.getStatusChangedAt().isBefore(to))
                 .count();
 
-        // print all tasks for debugging
-        System.out.println("Tasks for project " + projectId + " from " + from + " to " + to + ":");
-        tasks.forEach(task -> System.out.println("- " + task.getTitle() + " (created at " + task.getCreatedAt()
-                + ", completed: " + task.isCompleted() + ", overdue: " + task.isOverdue() + ", is relevant: "
-                + task.getCreatedAt().isAfter(from) + ")"));
+        Long overdueTasks = tasks.stream()
+                .filter(task -> !task.isCompleted() && task.getDueDate() != null
+                        && task.getDueDate().isBefore(Instant.now()) && task.getDueDate().isAfter(from)
+                        && task.getDueDate().isBefore(to))
+                .count();
+
+        // // print all tasks for debugging
+        // System.out.println("Stats for project " + project.getName() + " from " + from
+        // + " to " + to + "(monthDelta="
+        // + monthDelta + "):");
+        // System.out.println("- Total members: " + totalMembers);
+        // System.out.println("- Members joined: " + membersJoined);
+        // System.out.println("- Total tasks: " + tasks.size());
+        // System.out.println("- Tasks created: " + tasksCreated);
+        // System.out.println("- Tasks completed: " + tasksCompleted);
+        // System.out.println("- Overdue tasks: " + overdueTasks);
 
         ProjectsStatsDTO stats = new ProjectsStatsDTO(
                 projectId, // projectId
@@ -51,8 +77,8 @@ public class ProjectsStatsService {
                 to, // to
                 tasks.size(), // totalTasks
                 tasksCreated, // taskCreated
-                tasks.stream().filter(Task::isCompleted).count(), // completedTasks
-                tasks.stream().filter(Task::isOverdue).count(), // overdueTasks
+                tasksCompleted, // completedTasks
+                overdueTasks, // overdueTasks
                 totalMembers, // totalMembers
                 membersJoined // membersJoined
         );

@@ -40,6 +40,9 @@ public class Task extends PanacheEntity {
     @Column(name = "due_date")
     private Instant dueDate;
 
+    @Column(name = "status_changed_at")
+    private Instant statusChangedAt = Instant.now();
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt = Instant.now();
@@ -92,6 +95,7 @@ public class Task extends PanacheEntity {
 
     public void setStatus(int status) {
         this.status = status;
+        this.statusChangedAt = Instant.now();
     }
 
     public int getPriority() {
@@ -132,6 +136,10 @@ public class Task extends PanacheEntity {
 
     public void setDueDate(Instant dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public Instant getStatusChangedAt() {
+        return statusChangedAt;
     }
 
     public Instant getCreatedAt() {

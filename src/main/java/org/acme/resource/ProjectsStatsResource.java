@@ -15,6 +15,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/api/v1/projects/stats")
@@ -32,8 +33,11 @@ public class ProjectsStatsResource {
     ProjectService projectService;
 
     @GET
-    public List<ProjectsStatsDTO> getProjectsStats(@PathParam("limit") Long limit, @PathParam("offset") Long offset,
-            @PathParam("monthDelta") Long monthDelta) {
+    public List<ProjectsStatsDTO> getProjectsStats(@QueryParam("limit") Long limit, @QueryParam("offset") Long offset,
+            @QueryParam("monthDelta") Long monthDelta) {
+
+        System.out.println(
+                "Getting projects stats with limit=" + limit + ", offset=" + offset + ", monthDelta=" + monthDelta);
         User currentUser = userService.findUser(securityIdentity.getPrincipal().getName());
 
         return projectService.getProjectsByUserId(currentUser.id).stream()

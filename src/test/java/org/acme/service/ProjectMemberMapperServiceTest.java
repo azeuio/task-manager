@@ -1,24 +1,22 @@
 package org.acme.service;
 
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectStatus;
 import org.acme.model.project_member.ProjectMember;
 import org.acme.model.project_member.ProjectMemberDTO;
 import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 class ProjectMemberMapperServiceTest {
 
-    private ProjectMemberMapperService mapper;
-
-    @BeforeEach
-    void setUp() {
-        mapper = new ProjectMemberMapperServiceImpl();
-    }
+    @Inject
+    ProjectMemberMapperService mapper;
 
     @Test
     void toDTO_mapsFields() {

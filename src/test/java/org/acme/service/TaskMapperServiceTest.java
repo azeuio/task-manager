@@ -2,24 +2,22 @@ package org.acme.service;
 
 import java.time.Instant;
 
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectStatus;
 import org.acme.model.task.Task;
 import org.acme.model.task.TaskDTO;
 import org.acme.model.user.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 class TaskMapperServiceTest {
 
-    private TaskMapperService mapper;
-
-    @BeforeEach
-    void setUp() {
-        mapper = new TaskMapperServiceImpl();
-    }
+    @Inject
+    TaskMapperService mapper;
 
     @Test
     void toDTO_mapsAllFields() {

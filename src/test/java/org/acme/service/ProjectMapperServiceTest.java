@@ -4,25 +4,23 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.acme.model.project.Project;
 import org.acme.model.project.ProjectDTO;
 import org.acme.model.project.ProjectStatus;
 import org.acme.model.project_member.ProjectMember;
 import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 class ProjectMapperServiceTest {
 
-    private ProjectMapperService mapper;
-
-    @BeforeEach
-    void setUp() {
-        mapper = new ProjectMapperServiceImpl();
-    }
+    @Inject
+    ProjectMapperService mapper;
 
     // --- Static helper method tests ---
 

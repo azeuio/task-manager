@@ -139,6 +139,9 @@ public class Task extends PanacheEntity {
     }
 
     public Instant getStatusChangedAt() {
+        if (statusChangedAt == null) {
+            return createdAt;
+        }
         return statusChangedAt;
     }
 

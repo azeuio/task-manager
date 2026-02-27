@@ -35,8 +35,6 @@ class ProjectsStatsResourceTest {
     UserService userService;
 
     private User testUser;
-    private Long projectWithTasksId;
-    private Long emptyProjectId;
 
     @BeforeEach
     @Transactional
@@ -49,8 +47,6 @@ class ProjectsStatsResourceTest {
         // Project with tasks
         Project projectWithTasks = new Project("Active Project", "Has tasks", ProjectStatus.ACTIVE, testUser);
         projectWithTasks.persist();
-        projectWithTasksId = projectWithTasks.id;
-
         ProjectMember membership1 = new ProjectMember(projectWithTasks, testUser, ProjectMemberRole.OWNER);
         projectWithTasks.addMember(membership1);
         membership1.persist();
@@ -72,8 +68,6 @@ class ProjectsStatsResourceTest {
         // Empty project (no tasks)
         Project emptyProject = new Project("Empty Project", "No tasks", ProjectStatus.ACTIVE, testUser);
         emptyProject.persist();
-        emptyProjectId = emptyProject.id;
-
         ProjectMember membership2 = new ProjectMember(emptyProject, testUser, ProjectMemberRole.OWNER);
         emptyProject.addMember(membership2);
         membership2.persist();

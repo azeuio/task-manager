@@ -32,7 +32,6 @@ class UserResourceTest {
 
     private User testUser;
     private Long testUserId;
-    private Long testProjectId;
 
     @BeforeEach
     @Transactional
@@ -45,8 +44,6 @@ class UserResourceTest {
 
         Project project = new Project("Test Project", "Test", ProjectStatus.ACTIVE, testUser);
         project.persist();
-        testProjectId = project.id;
-
         ProjectMember membership = new ProjectMember(project, testUser, ProjectMemberRole.OWNER);
         project.addMember(membership);
         membership.persist();

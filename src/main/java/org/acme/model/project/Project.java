@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.acme.model.project_member.ProjectMember;
-import org.acme.model.project_member.ProjectMemberRole;
 import org.acme.model.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 

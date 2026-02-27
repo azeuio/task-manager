@@ -21,14 +21,6 @@ public class ProjectService {
         return ProjectMember.list("select m from ProjectMember m where m.user.id = ?1", userId);
     }
 
-    public List<Project> findAll() {
-        return Project.listAll();
-    }
-
-    public boolean isUserProjectMember(Long projectId, Long userId) {
-        return ProjectMember.count("project.id = ?1 and user.id = ?2", projectId, userId) > 0;
-    }
-
     public Set<User> getUsersByProjectId(Long projectId) {
         return User.find(
                 "SELECT DISTINCT u FROM User u JOIN ProjectMember pm ON pm.user.id = u.id WHERE pm.project.id = :projectId",

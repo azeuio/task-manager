@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.acme.model.project_member.ProjectMember;
-import org.acme.model.user_stats.UserStats;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.annotations.CreationTimestamp;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;

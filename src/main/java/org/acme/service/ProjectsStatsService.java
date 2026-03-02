@@ -55,7 +55,7 @@ public class ProjectsStatsService {
 
         Long overdueTasks = tasks.stream()
                 .filter(task -> !task.isCompleted() && task.getDueDate() != null
-                        && task.getDueDate().isBefore(Instant.now()) && task.getDueDate().isAfter(from)
+                        && task.getDueDate().isBefore(Instant.now()) && task.getCreatedAt().isBefore(to)
                         && task.getDueDate().isBefore(to))
                 .count();
 

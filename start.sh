@@ -1,3 +1,5 @@
+#!/bin/bash
+
 let global_counter=0
 function waiting_for() {
   local service_name=$1

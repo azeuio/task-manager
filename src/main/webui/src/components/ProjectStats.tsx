@@ -72,7 +72,7 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
                       visible: (i) => ({
                         opacity: 1,
                         y: 0,
-                        height: size * 100,
+                        height: size * 75,
                         transition: {
                           duration: 0.5,
                           ease: "easeInOut",
@@ -81,7 +81,7 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
                       }),
                     }}
                     className={`bg-primary-content rounded-lg flex items-end justify-center text-primary font-bold text-2xl`}
-                    style={{ height: `${size * 100}px`, width: "100px" }}
+                    style={{ height: `${size * 75}px`, width: "100px" }}
                   >
                     {importance + 1}
                   </motion.div>
@@ -107,7 +107,7 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
                     <div
                       hidden={!projectStats}
                       className={
-                        "flex flex-col gap-4 *:first:text-center *:first:underline *:first:bg-primary-content *:first:text-primary  *:even:bg-primary-content *:even:text-primary *:odd:text-center *:odd:not-first:text-primary-content *:font-bold *:text-xl *:rounded-lg *:px-4  "
+                        "flex flex-col gap-2 *:first:text-center *:first:underline *:first:bg-primary-content *:first:text-primary  *:even:bg-primary-content *:even:text-primary *:odd:text-center *:odd:not-first:text-primary-content *:font-bold *:text-xl *:rounded-lg *:px-4  "
                       }
                     >
                       <motion.div

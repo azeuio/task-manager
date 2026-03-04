@@ -8,13 +8,42 @@ import java.util.List;
 
 import org.acme.model.project.Project;
 import org.acme.model.project_member.ProjectMember;
+import org.acme.model.projects_stats.MostNewTasksDTO;
 import org.acme.model.projects_stats.ProjectsStatsDTO;
 import org.acme.model.task.Task;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
 @ApplicationScoped
 public class ProjectsStatsService {
+    @Inject
+    EntityManager em;
+
+    public MostNewTasksDTO mostNewTasksInPastMonth() {
+        Instant now = Instant.now();
+        ZonedDateTime startOfMonth = now.atZone(ZoneId.systemDefault()).withDayOfMonth(1)
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        Instant from = startOfMonth.toInstant();
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createQuery(
+                "SELECT t.project.id, COUNT(t) FROM Task t WHERE t.createdAt >= :from GROUP BY t.project.id ORDER BY COUNT(t) DESC")
+                .setParameter("from", from)
+                .setMaxResults(1)
+                .getResultList();
+
+        if (rows.isEmpty()) {
+            return null;
+        }
+        Object[] top = rows.get(0);
+        Long projectId = (Long) top[0];
+        Long taskCount = (Long) top[1];
+        Project project = Project.findById(projectId);
+        return new MostNewTasksDTO(projectId, project.getName(), project.getColor(), taskCount);
+    }
+
     public ProjectsStatsDTO toDTO(Long projectId, Long monthDelta) {
         Project project = Project.findById(projectId);
         Instant now = Instant.now();

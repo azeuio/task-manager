@@ -1,5 +1,12 @@
 import { fetchAuthenticated } from "./fetchAuthenticated";
-import type { ProjectStats } from "./types";
+import type { MostNewTasks, ProjectStats } from "./types";
+
+export const fetchMostNewTasks = () => {
+  return fetchAuthenticated<MostNewTasks>(`/api/v1/projects/stats/most-new-tasks`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+};
 
 export const fetchProjectsStats = (limit?: number) => {
   const searchParams = new URLSearchParams();

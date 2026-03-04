@@ -1,12 +1,99 @@
-import { useProjectsStats } from "@/hooks/useProjectsStats";
+import { useEffect, useRef, useState } from "react";
+import { useProjectsStats, useMostNewTasks } from "@/hooks/useProjectsStats";
 import Intro from "@/stories/Intro";
-import { motion, stagger, type Transition } from "framer-motion";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  stagger,
+  type Transition,
+  useMotionValue,
+  useMotionValueEvent,
+} from "framer-motion";
+import type { MostNewTasks } from "@/api/types";
 
 interface ProjectsStatsProps {
-  toggle: () => void; // Call this to toggle the projects stats off after it's done
+  toggle: () => void;
 }
+
+function MostNewTasksCard({
+  data,
+  onDone,
+}: {
+  data: MostNewTasks | undefined;
+  onDone: () => void;
+}) {
+  const arrivedRef = useRef(false);
+  const [hasArrived, setHasArrived] = useState(false);
+  const count = useMotionValue(0);
+  const [displayCount, setDisplayCount] = useState(0);
+
+  useMotionValueEvent(count, "change", (v) => setDisplayCount(Math.round(v)));
+
+  useEffect(() => {
+    if (!hasArrived) return;
+    const target = data?.taskCount ?? 0;
+    const animControls = animate(count, target, {
+      duration: 1.5,
+      ease: "easeOut",
+    });
+    const timer = setTimeout(onDone, 2000);
+    return () => {
+      animControls.stop();
+      clearTimeout(timer);
+    };
+  }, [hasArrived, data, count, onDone]);
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center"
+      initial={{ y: "110%" }}
+      animate={{ y: "0%" }}
+      exit={{ y: "-110%", transition: { duration: 0.6, ease: "easeInOut" } }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+      onAnimationComplete={() => {
+        if (!arrivedRef.current) {
+          arrivedRef.current = true;
+          setHasArrived(true);
+        }
+      }}
+    >
+      <div className="bg-white rounded-3xl shadow-2xl p-10 flex flex-col items-center gap-6 min-w-80">
+        <motion.div
+          className="text-7xl select-none"
+          animate={{ y: [4, -14, 4] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          ↑
+        </motion.div>
+        <div className="flex items-center gap-3">
+          <div
+            className="w-7 h-7 rounded-md shrink-0"
+            style={{ backgroundColor: data?.color ?? "#888" }}
+          />
+          <span className="text-2xl font-bold text-gray-800">
+            {data?.projectName ?? "…"}
+          </span>
+        </div>
+        <motion.div
+          className="text-7xl font-extrabold text-gray-900 tabular-nums"
+          initial={{ y: 24, opacity: 0 }}
+          animate={hasArrived ? { y: 0, opacity: 1 } : { y: 24, opacity: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
+          {displayCount}
+        </motion.div>
+        <p className="text-lg text-gray-500 font-medium">new tasks this month</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
   const { data: projectsStats } = useProjectsStats();
+  const { data: mostNewTasks } = useMostNewTasks();
+  const [phase, setPhase] = useState<"intro" | "main">("intro");
+
   const itemTransition: Transition = {
     duration: 0.5,
     ease: "easeInOut",
@@ -34,213 +121,103 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
         },
       }}
     >
-      <button
-        className="absolute bottom-4 right-4 btn btn-primary"
-        onClick={toggle}
-      >
-        Close
-      </button>
       <Intro>
-        <div className="flex-1 flex flex-col h-full justify-between">
-          <motion.div
-            variants={{
-              hidden: { opacity: 0, y: 0 },
-              visible: { opacity: 1, y: 20 },
-            }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="text-7xl font-bold text-center text-primary-content"
-          >
-            Most active projects
-          </motion.div>
-          <div className="size-full flex flex-row items-end justify-center gap-8 p-12">
-            <div className="invisible" style={{}} />
-            {[2, 3, 1].map((size) => {
-              const importance = 3 - size; // 0 for largest, 2 for smallest
-              const projectStats = projectsStats?.at(importance);
-              return (
-                <motion.div
-                  className="flex flex-col-reverse gap-4 items-center justify-between h-full"
-                  key={size}
-                  transition={{
-                    delayChildren: stagger(10, { startDelay: size * 2 }),
-                  }}
+        <div className="relative size-full">
+          <AnimatePresence mode="wait">
+            {phase === "intro" ? (
+              <MostNewTasksCard
+                key="intro"
+                data={mostNewTasks}
+                onDone={() => setPhase("main")}
+              />
+            ) : (
+              <motion.div
+                key="main"
+                className="flex-1 flex flex-col h-full justify-between"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <button
+                  className="absolute bottom-4 right-4 btn btn-primary"
+                  onClick={toggle}
                 >
-                  <motion.div // podium bar
-                    custom={size}
-                    variants={{
-                      hidden: { opacity: 0, y: 20, height: 0 },
-                      visible: (i) => ({
-                        opacity: 1,
-                        y: 0,
-                        height: size * 75,
-                        transition: {
-                          duration: 0.5,
-                          ease: "easeInOut",
-                          delay: i * 0.5,
-                        },
-                      }),
-                    }}
-                    className={`bg-primary-content rounded-lg flex items-end justify-center text-primary font-bold text-2xl`}
-                    style={{ height: `${size * 75}px`, width: "100px" }}
-                  >
-                    {importance + 1}
-                  </motion.div>
-                  <motion.div // podium item
-                    className="flex-1"
-                    custom={size}
-                    variants={{
-                      visible: {
-                        transition: {
-                          duration: 0.5,
-                          delayChildren: stagger(0.1),
-                          ease: "easeInOut",
-                        },
-                      },
-                      hidden: {
-                        transition: {
-                          duration: 0,
-                          ease: "easeInOut",
-                        },
-                      },
-                    }}
-                  >
-                    <div
-                      hidden={!projectStats}
-                      className={
-                        "flex flex-col gap-2 *:first:text-center *:first:underline *:first:bg-primary-content *:first:text-primary  *:even:bg-primary-content *:even:text-primary *:odd:text-center *:odd:not-first:text-primary-content *:font-bold *:text-xl *:rounded-lg *:px-4  "
-                      }
-                    >
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        {projectStats?.projectName}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Total tasks:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                      >
-                        {projectStats?.totalTasks}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Tasks created:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                      >
-                        {projectStats?.tasksCreated}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Completed tasks:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                      >
-                        {" "}
-                        {projectStats?.completedTasks}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Overdue tasks:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                      >
-                        {projectStats?.overdueTasks}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Total members:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                      >
-                        {projectStats?.totalMembers}
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={itemTransition}
-                        className=""
-                      >
-                        Members joined:
-                      </motion.div>
-                      <motion.div
-                        variants={{
-                          hidden: { opacity: 0 },
-                          visible: { opacity: 1 },
-                        }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        {projectStats?.membersJoined}
-                      </motion.div>
-                    </div>
-                  </motion.div>
+                  Close
+                </button>
+                <motion.div
+                  initial={{ opacity: 0, y: 0 }}
+                  animate={{ opacity: 1, y: 20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="text-7xl font-bold text-center text-primary-content"
+                >
+                  Most active projects
                 </motion.div>
-              );
-            })}
-          </div>
+                <div className="size-full flex flex-row items-end justify-center gap-8 p-12">
+                  <div className="invisible" />
+                  {[2, 3, 1].map((size) => {
+                    const importance = 3 - size;
+                    const projectStats = projectsStats?.at(importance);
+                    return (
+                      <div
+                        className="flex flex-col-reverse gap-4 items-center justify-between h-full"
+                        key={size}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 20, height: 0 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            height: size * 75,
+                          }}
+                          transition={{
+                            duration: 0.5,
+                            ease: "easeInOut",
+                            delay: size * 0.5,
+                          }}
+                          className="bg-primary-content rounded-lg flex items-end justify-center text-primary font-bold text-2xl"
+                          style={{ width: "100px" }}
+                        >
+                          {importance + 1}
+                        </motion.div>
+                        <div
+                          hidden={!projectStats}
+                          className="flex-1 flex flex-col gap-2 *:first:text-center *:first:underline *:first:bg-primary-content *:first:text-primary *:even:bg-primary-content *:even:text-primary *:odd:text-center *:odd:not-first:text-primary-content *:font-bold *:text-xl *:rounded-lg *:px-4"
+                        >
+                          {[
+                            projectStats?.projectName,
+                            "Total tasks:",
+                            projectStats?.totalTasks,
+                            "Tasks created:",
+                            projectStats?.tasksCreated,
+                            "Completed tasks:",
+                            projectStats?.completedTasks,
+                            "Overdue tasks:",
+                            projectStats?.overdueTasks,
+                            "Total members:",
+                            projectStats?.totalMembers,
+                            "Members joined:",
+                            projectStats?.membersJoined,
+                          ].map((val, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{
+                                ...itemTransition,
+                                delay: 0.3 + i * 0.08,
+                              }}
+                            >
+                              {val}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </Intro>
     </motion.div>

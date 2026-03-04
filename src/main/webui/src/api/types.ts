@@ -53,6 +53,20 @@ interface MostNewTasks {
   taskCount: number;
 }
 
+interface MostNewMembers {
+  projectId: Project["id"];
+  projectName: string;
+  color: string;
+  memberCount: number;
+}
+
+interface MostCompleted {
+  projectId: Project["id"];
+  projectName: string;
+  color: string;
+  completedCount: number;
+}
+
 interface User {
   id: number;
   username: string;
@@ -84,6 +98,8 @@ export type {
   Project,
   ProjectStats,
   MostNewTasks,
+  MostNewMembers,
+  MostCompleted,
   User,
   ProjectMember,
 };

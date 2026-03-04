@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useProjectsStats, useMostNewTasks } from "@/hooks/useProjectsStats";
+import {
+  useProjectsStats,
+  useMostNewTasks,
+  useMostNewMembers,
+  useMostCompleted,
+} from "@/hooks/useProjectsStats";
 import Intro from "@/stories/Intro";
 import {
   AnimatePresence,
@@ -10,30 +15,37 @@ import {
   useMotionValue,
   useMotionValueEvent,
 } from "framer-motion";
-import type { MostNewTasks } from "@/api/types";
 
 interface ProjectsStatsProps {
   toggle: () => void;
 }
 
-function MostNewTasksCard({
-  data,
+function StatCard({
+  projectName,
+  color,
+  count,
+  label,
   onDone,
 }: {
-  data: MostNewTasks | undefined;
+  projectName: string | undefined;
+  color: string | undefined;
+  count: number | undefined;
+  label: string;
   onDone: () => void;
 }) {
   const arrivedRef = useRef(false);
   const [hasArrived, setHasArrived] = useState(false);
-  const count = useMotionValue(0);
+  const motionCount = useMotionValue(0);
   const [displayCount, setDisplayCount] = useState(0);
 
-  useMotionValueEvent(count, "change", (v) => setDisplayCount(Math.round(v)));
+  useMotionValueEvent(motionCount, "change", (v) =>
+    setDisplayCount(Math.round(v)),
+  );
 
   useEffect(() => {
     if (!hasArrived) return;
-    const target = data?.taskCount ?? 0;
-    const animControls = animate(count, target, {
+    const target = count ?? 0;
+    const animControls = animate(motionCount, target, {
       duration: 1.5,
       ease: "easeOut",
     });
@@ -42,7 +54,7 @@ function MostNewTasksCard({
       animControls.stop();
       clearTimeout(timer);
     };
-  }, [hasArrived, data, count, onDone]);
+  }, [hasArrived, count, motionCount, onDone]);
 
   return (
     <motion.div
@@ -69,10 +81,10 @@ function MostNewTasksCard({
         <div className="flex items-center gap-3">
           <div
             className="w-7 h-7 rounded-md shrink-0"
-            style={{ backgroundColor: data?.color ?? "#888" }}
+            style={{ backgroundColor: color ?? "#888" }}
           />
           <span className="text-2xl font-bold text-gray-800">
-            {data?.projectName ?? "…"}
+            {projectName ?? "…"}
           </span>
         </div>
         <motion.div
@@ -83,16 +95,20 @@ function MostNewTasksCard({
         >
           {displayCount}
         </motion.div>
-        <p className="text-lg text-gray-500 font-medium">new tasks this month</p>
+        <p className="text-lg text-gray-500 font-medium">{label}</p>
       </div>
     </motion.div>
   );
 }
 
+type Phase = "tasks" | "members" | "completed" | "main";
+
 export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
   const { data: projectsStats } = useProjectsStats();
   const { data: mostNewTasks } = useMostNewTasks();
-  const [phase, setPhase] = useState<"intro" | "main">("intro");
+  const { data: mostNewMembers } = useMostNewMembers();
+  const { data: mostCompleted } = useMostCompleted();
+  const [phase, setPhase] = useState<Phase>("tasks");
 
   const itemTransition: Transition = {
     duration: 0.5,
@@ -124,13 +140,37 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
       <Intro>
         <div className="relative size-full">
           <AnimatePresence mode="wait">
-            {phase === "intro" ? (
-              <MostNewTasksCard
-                key="intro"
-                data={mostNewTasks}
+            {phase === "tasks" && (
+              <StatCard
+                key="tasks"
+                projectName={mostNewTasks?.projectName}
+                color={mostNewTasks?.color}
+                count={mostNewTasks?.taskCount}
+                label="new tasks this month"
+                onDone={() => setPhase("members")}
+              />
+            )}
+            {phase === "members" && (
+              <StatCard
+                key="members"
+                projectName={mostNewMembers?.projectName}
+                color={mostNewMembers?.color}
+                count={mostNewMembers?.memberCount}
+                label="new members this month"
+                onDone={() => setPhase("completed")}
+              />
+            )}
+            {phase === "completed" && (
+              <StatCard
+                key="completed"
+                projectName={mostCompleted?.projectName}
+                color={mostCompleted?.color}
+                count={mostCompleted?.completedCount}
+                label="tasks completed this month"
                 onDone={() => setPhase("main")}
               />
-            ) : (
+            )}
+            {phase === "main" && (
               <motion.div
                 key="main"
                 className="flex-1 flex flex-col h-full justify-between"
@@ -164,11 +204,7 @@ export default function ProjectsStats({ toggle }: ProjectsStatsProps) {
                       >
                         <motion.div
                           initial={{ opacity: 0, y: 20, height: 0 }}
-                          animate={{
-                            opacity: 1,
-                            y: 0,
-                            height: size * 75,
-                          }}
+                          animate={{ opacity: 1, y: 0, height: size * 75 }}
                           transition={{
                             duration: 0.5,
                             ease: "easeInOut",

@@ -1,5 +1,7 @@
 package org.acme.resource;
 
+import org.acme.model.projects_stats.MostCompletedDTO;
+import org.acme.model.projects_stats.MostNewMembersDTO;
 import org.acme.model.projects_stats.MostNewTasksDTO;
 import org.acme.service.ProjectsStatsService;
 
@@ -24,6 +26,26 @@ public class ProjectsStatsResource {
         MostNewTasksDTO result = projectsStatsService.mostNewTasksInPastMonth();
         if (result == null) {
             throw new NotFoundException("No tasks created this month");
+        }
+        return result;
+    }
+
+    @GET
+    @Path("/most-new-members")
+    public MostNewMembersDTO getMostNewMembers() {
+        MostNewMembersDTO result = projectsStatsService.mostNewMembersInPastMonth();
+        if (result == null) {
+            throw new NotFoundException("No members joined this month");
+        }
+        return result;
+    }
+
+    @GET
+    @Path("/most-completed")
+    public MostCompletedDTO getMostCompleted() {
+        MostCompletedDTO result = projectsStatsService.mostCompletedInPastMonth();
+        if (result == null) {
+            throw new NotFoundException("No tasks completed this month");
         }
         return result;
     }

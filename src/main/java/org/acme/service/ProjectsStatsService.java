@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.acme.model.project.Project;
 import org.acme.model.project_member.ProjectMember;
+import org.acme.model.projects_stats.MostCompletedDTO;
+import org.acme.model.projects_stats.MostNewMembersDTO;
 import org.acme.model.projects_stats.MostNewTasksDTO;
 import org.acme.model.projects_stats.ProjectsStatsDTO;
 import org.acme.model.task.Task;
@@ -42,6 +44,50 @@ public class ProjectsStatsService {
         Long taskCount = (Long) top[1];
         Project project = Project.findById(projectId);
         return new MostNewTasksDTO(projectId, project.getName(), project.getColor(), taskCount);
+    }
+
+    public MostNewMembersDTO mostNewMembersInPastMonth() {
+        Instant now = Instant.now();
+        Instant from = now.atZone(ZoneId.systemDefault()).withDayOfMonth(1)
+                .withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant();
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createQuery(
+                "SELECT pm.project.id, COUNT(pm) FROM ProjectMember pm WHERE pm.joinedAt >= :from GROUP BY pm.project.id ORDER BY COUNT(pm) DESC")
+                .setParameter("from", from)
+                .setMaxResults(1)
+                .getResultList();
+
+        if (rows.isEmpty()) {
+            return null;
+        }
+        Object[] top = rows.get(0);
+        Long projectId = (Long) top[0];
+        Long memberCount = (Long) top[1];
+        Project project = Project.findById(projectId);
+        return new MostNewMembersDTO(projectId, project.getName(), project.getColor(), memberCount);
+    }
+
+    public MostCompletedDTO mostCompletedInPastMonth() {
+        Instant now = Instant.now();
+        Instant from = now.atZone(ZoneId.systemDefault()).withDayOfMonth(1)
+                .withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant();
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = em.createQuery(
+                "SELECT t.project.id, COUNT(t) FROM Task t WHERE t.status = 2 AND t.statusChangedAt >= :from GROUP BY t.project.id ORDER BY COUNT(t) DESC")
+                .setParameter("from", from)
+                .setMaxResults(1)
+                .getResultList();
+
+        if (rows.isEmpty()) {
+            return null;
+        }
+        Object[] top = rows.get(0);
+        Long projectId = (Long) top[0];
+        Long completedCount = (Long) top[1];
+        Project project = Project.findById(projectId);
+        return new MostCompletedDTO(projectId, project.getName(), project.getColor(), completedCount);
     }
 
     public ProjectsStatsDTO toDTO(Long projectId, Long monthDelta) {

@@ -1,5 +1,6 @@
 package org.acme.resource;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.acme.model.project.Project;
@@ -106,6 +107,7 @@ public class TaskResource {
         Integer status = taskDTO.status() != null ? taskDTO.status() : 0;
         Integer priority = taskDTO.priority() != null ? taskDTO.priority() : 0;
         Integer assignedToId = taskDTO.assignedToId();
+        Instant dueDate = taskDTO.dueDate();
 
         Task newTask = new Task(title, description, status, priority, project,
                 createdBy);
@@ -115,6 +117,9 @@ public class TaskResource {
                 throw new RuntimeException("Assigned user not found");
             }
             newTask.setAssignedTo(assignedTo);
+        }
+        if (dueDate != null) {
+            newTask.setDueDate(dueDate);
         }
         newTask.persist();
         return taskMapper.toDTO(newTask);

@@ -86,7 +86,7 @@ class TaskResourceTest {
         void createTask() {
                 given()
                                 .contentType(ContentType.JSON)
-                                .body("{\"title\": \"New Task\", \"description\": \"New task desc\", \"status\": 0, \"priority\": 2, \"assignedToId\": " + testUser.id + "}")
+                                .body("{\"title\": \"New Task\", \"description\": \"New task desc\", \"status\": 0, \"priority\": 2, \"assignedToId\": " + testUser.id + ", \"dueDate\": \"2026-12-31T23:59:59Z\"}")
                                 .when().post("/api/v1/projects/" + testProjectId + "/tasks")
                                 .then()
                                 .statusCode(200)
@@ -94,7 +94,8 @@ class TaskResourceTest {
                                 .body("description", is("New task desc"))
                                 .body("status", is(0))
                                 .body("priority", is(2))
-                                .body("assignedToId", is(testUser.id.intValue()));
+                                .body("assignedToId", is(testUser.id.intValue()))
+                                .body("dueDate", is("2026-12-31T23:59:59Z"));
         }
 
         @Test

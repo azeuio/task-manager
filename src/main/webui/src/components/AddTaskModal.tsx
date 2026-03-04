@@ -27,6 +27,8 @@ function AddTaskModal({
     const description = formData.get("description") as string;
     const statusValue = formData.get("status") as string;
     const status = parseInt(statusValue, 10);
+    const dueDateValue = formData.get("dueDate") as string;
+    const dueDate = dueDateValue ? new Date(dueDateValue) : undefined;
 
     // Implement task creation logic here, e.g., send data to API, update state, etc.
     const taskData = {
@@ -34,6 +36,7 @@ function AddTaskModal({
       description,
       status,
       assignedToId: selectedUserId,
+      dueDate: dueDate ? dueDate.toISOString() : undefined,
     };
     createTask(taskData);
 
@@ -54,7 +57,7 @@ function AddTaskModal({
     if (statusIndex !== -1) {
       const statusButton = document.getElementById(`status-dropdown`);
       if (statusButton) {
-        statusButton.innerText = `Status: ${statuses[statusIndex]}`;
+        statusButton.innerText = `${statuses[statusIndex]}`;
         statusButton.blur();
       }
     }
@@ -74,16 +77,35 @@ function AddTaskModal({
           className="textarea textarea-bordered w-full mt-2"
           name="description"
         ></textarea>
+        <div className="grid grid-cols-2 gap-4 mt-2">
+
+        <div>
+          <label className="span m-2 text-sm font-medium text-gray-900">
+            Status:
+          </label>
         <ChooseStatusDropdown
           statuses={statuses}
           statusesOrder={statusesOrder}
           updateStatusButton={updateStatusButton}
         />
+        </div>
+        <div>
+          <label className="span m-2 text-sm font-medium text-gray-900">
+            Assign to:
+          </label>
         <ChooseUserDropdown
           updateUser={updateSelectedUserId}
           users={users ?? []}
           current={selectedUserId}
         />
+        </div>
+        <div className="col-span-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-900">
+            Due Date:
+        <input type="date" className="input input-bordered grow" name="dueDate" />
+          </label>
+        </div>
+        </div>
         <div className="modal-action">
           <button className="btn">Cancel</button>
           <button className="btn btn-primary">Add Task</button>

@@ -15,7 +15,7 @@ function KanbanColumn({ status, title, tasks, readonly }: KanbanColumnProps) {
     ) as HTMLInputElement | null;
     const statusButton = document.getElementById(`status-dropdown`);
     if (statusButton) {
-      statusButton.innerText = `Status: ${title}`;
+      statusButton.innerText = `${title}`;
     }
     if (modal && modal instanceof HTMLDialogElement) {
       if (statusSelect) {

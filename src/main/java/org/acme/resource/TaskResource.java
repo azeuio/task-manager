@@ -105,9 +105,17 @@ public class TaskResource {
         String description = taskDTO.description() != null ? taskDTO.description() : "";
         Integer status = taskDTO.status() != null ? taskDTO.status() : 0;
         Integer priority = taskDTO.priority() != null ? taskDTO.priority() : 0;
+        Integer assignedToId = taskDTO.assignedToId();
 
         Task newTask = new Task(title, description, status, priority, project,
                 createdBy);
+        if (assignedToId != null) {
+            User assignedTo = User.findById(assignedToId);
+            if (assignedTo == null) {
+                throw new RuntimeException("Assigned user not found");
+            }
+            newTask.setAssignedTo(assignedTo);
+        }
         newTask.persist();
         return taskMapper.toDTO(newTask);
     }

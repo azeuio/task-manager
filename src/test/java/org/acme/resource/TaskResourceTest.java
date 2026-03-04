@@ -86,16 +86,15 @@ class TaskResourceTest {
         void createTask() {
                 given()
                                 .contentType(ContentType.JSON)
-                                .body("""
-                                                {"title": "New Task", "description": "New task desc", "status": 0, "priority": 2}
-                                                """)
+                                .body("{\"title\": \"New Task\", \"description\": \"New task desc\", \"status\": 0, \"priority\": 2, \"assignedToId\": " + testUser.id + "}")
                                 .when().post("/api/v1/projects/" + testProjectId + "/tasks")
                                 .then()
                                 .statusCode(200)
                                 .body("title", is("New Task"))
                                 .body("description", is("New task desc"))
                                 .body("status", is(0))
-                                .body("priority", is(2));
+                                .body("priority", is(2))
+                                .body("assignedToId", is(testUser.id.intValue()));
         }
 
         @Test
@@ -108,7 +107,8 @@ class TaskResourceTest {
                                 .statusCode(200)
                                 .body("title", is("Untitled Task"))
                                 .body("status", is(0))
-                                .body("priority", is(0));
+                                .body("priority", is(0))
+                                .body("assignedToId", nullValue());
         }
 
         @Test
@@ -167,5 +167,17 @@ class TaskResourceTest {
                                 .then()
                                 .statusCode(200)
                                 .body("$", hasSize(0));
+        }
+
+        @Test
+        void createTask_withInvalidAssignedUser() {
+                given()
+                                .contentType(ContentType.JSON)
+                                .body("""
+                                                {"title": "Task with invalid user", "assignedToId": 99999}
+                                                """)
+                                .when().post("/api/v1/projects/" + testProjectId + "/tasks")
+                                .then()
+                                .statusCode(500);
         }
 }

@@ -70,7 +70,7 @@ function TaskDescription({
           <PencilLine className="text-primary" size={16} />
         </button>
       </h4>
-      <p className="border border-t-0 border-primary p-4 rounded-b-box">
+      <div className="border border-t-0 border-primary p-4 rounded-b-box">
         <p hidden={isEditing}>{description}</p>
         <textarea
           id="task-edit-description"
@@ -89,7 +89,7 @@ function TaskDescription({
             Save
           </button>
         </div>
-      </p>
+      </div>
     </form>
   );
 }

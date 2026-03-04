@@ -29,12 +29,13 @@ function AddTaskModal({
     const status = parseInt(statusValue, 10);
 
     // Implement task creation logic here, e.g., send data to API, update state, etc.
-    createTask({
+    const taskData = {
       title,
       description,
       status,
       assignedToId: selectedUserId,
-    });
+    };
+    createTask(taskData);
 
     // reset form fields after submission
     event.currentTarget.reset();
